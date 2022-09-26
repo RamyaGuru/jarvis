@@ -17,9 +17,7 @@ def get_eigvals(mat=[]):
     print("true values", np.linalg.eigh(matrix)[0])
     for i in range(rows):
         for j in range(columns):
-            H += matrix[i, j] * tq.paulis.KetBra(
-                ket=i, bra=j, n_qubits=n_qubits
-            )
+            H += matrix[i, j] * tq.paulis.KetBra(ket=i, bra=j, n_qubits=n_qubits)
 
     hermitian, anti = H.split()
     eigenValues, eigenVectors = numpy.linalg.eigh(hermitian.to_matrix())

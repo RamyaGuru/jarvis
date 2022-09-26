@@ -38,10 +38,7 @@ class WTin(object):
         if self.semi_core_states is None:
             path_semi_core = str(
                 os.path.join(
-                    os.path.dirname(__file__),
-                    "..",
-                    "wannier",
-                    "default_semicore.json",
+                    os.path.dirname(__file__), "..", "wannier", "default_semicore.json",
                 )
             )
             f = open(path_semi_core, "r")
@@ -82,9 +79,7 @@ class WTin(object):
 
     def get_ibz_kp(self):
         """Get high-symmetry k-points."""
-        frac_k_points, k_points_labels = Kpoints3D().interpolated_points(
-            self.atoms
-        )
+        frac_k_points, k_points_labels = Kpoints3D().interpolated_points(self.atoms)
         lines = []
         for i, j in zip(frac_k_points, k_points_labels):
             if j != "":
@@ -120,9 +115,7 @@ class WTin(object):
         except Exception:
             pass
         try:
-            string = string.replace(
-                "f", "fz3,fxz2,fyz2,fxyz,fzx2y2,fxx23y2,fy3x2y2"
-            )
+            string = string.replace("f", "fz3,fxz2,fyz2,fxyz,fzx2y2,fxx23y2,fy3x2y2")
         except Exception:
             pass
         return string
@@ -143,9 +136,7 @@ class WTin(object):
         line = str("/ \n")
         f.write(line)
 
-        wan_cts = Wannier90wout(
-            wout_path=self.wannierout
-        ).give_wannier_centers()
+        wan_cts = Wannier90wout(wout_path=self.wannierout).give_wannier_centers()
 
         control = {
             "BulkBand_calc": "T",
@@ -210,11 +201,7 @@ class WTin(object):
             "KPATH_BULK": kp_dat,
             "KPATH_SLAB": [2, "K 0.33 0.67 G 0.0 0.0", "G 0.0 0.0 M 0.5 0.5"],
             "KPLANE_SLAB": ["-0.1 -0.1", "0.2  0.0", "0.0  0.2"],
-            "KPLANE_BULK": [
-                "0.0 0.0  0.00",
-                "1.00  0.00  0.00 ",
-                " 0.00  1.00  0.00",
-            ],
+            "KPLANE_BULK": ["0.0 0.0  0.00", "1.00  0.00  0.00 ", " 0.00  1.00  0.00",],
             "KCUBE_BULK": [
                 "-0.50 -0.50 -0.50",
                 "1.00  0.00  0.00",

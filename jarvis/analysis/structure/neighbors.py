@@ -124,8 +124,7 @@ def calc_structure_data(coords, box, all_symbs, c_size):
         return pipe(
             dim,
             special_arange,
-            lambda x: (coords[:, None, :] + x[None, :, :])
-            / dim[None, None, :],
+            lambda x: (coords[:, None, :] + x[None, :, :]) / dim[None, None, :],
             lambda x: np.reshape(x, (-1, 3)),
             lambda x: dict(
                 coords=x,
@@ -216,9 +215,7 @@ class NeighborsAnalysis(object):
                 if dd < rcut and dd >= 0.1:
                     sumb_i = new_symbs[i]
                     sumb_j = new_symbs[j]
-                    comb = "_".join(
-                        sorted(str(sumb_i + "_" + sumb_j).split("_"))
-                    )
+                    comb = "_".join(sorted(str(sumb_i + "_" + sumb_j).split("_")))
                     different_bond.setdefault(comb, []).append(dd)
 
                     # print ('dd',dd)
@@ -238,9 +235,8 @@ class NeighborsAnalysis(object):
                         bondy[nn_index1][j] = -new_diff[1]
                         bondz[nn_index1][j] = -new_diff[2]
                     else:
-                        self.nb_warn = (
-                            "Very large nearest neighbors observed "
-                            + str(nn_index)
+                        self.nb_warn = "Very large nearest neighbors observed " + str(
+                            nn_index
                         )
         nbor_info["dist"] = dist
         nbor_info["nat"] = nat
@@ -259,17 +255,10 @@ class NeighborsAnalysis(object):
         nbor_info = self.nbor_list(c_size=2 * self.max_cut + 1)
         # nbor_info = self.nbor_list(c_size=21.0)
         n_zero_d = nbor_info["dist"][np.nonzero(nbor_info["dist"])]
-        hist, bins = np.histogram(
-            n_zero_d.ravel(), bins=np.arange(0.1, 10.2, 0.1)
-        )
+        hist, bins = np.histogram(n_zero_d.ravel(), bins=np.arange(0.1, 10.2, 0.1))
         const = float(nbor_info["nat"]) / float(self._atoms.num_atoms)
         hist = hist / float(const)
-        shell_vol = (
-            4.0
-            / 3.0
-            * np.pi
-            * (np.power(bins[1:], 3) - np.power(bins[:-1], 3))
-        )
+        shell_vol = 4.0 / 3.0 * np.pi * (np.power(bins[1:], 3) - np.power(bins[:-1], 3))
         number_density = self._atoms.num_atoms / self._atoms.volume
         rdf = (
             hist / shell_vol / number_density / self._atoms.num_atoms
@@ -327,11 +316,7 @@ class NeighborsAnalysis(object):
             pass
         try:
             delta = arr[io3] - arr[io2]
-            while (
-                delta < rcut_buffer
-                and arr[io3] < max_cut
-                and arr[io2] < max_cut
-            ):
+            while delta < rcut_buffer and arr[io3] < max_cut and arr[io2] < max_cut:
                 io2 = io2 + 1
                 io3 = io3 + 1
                 delta = arr[io3] - arr[io2]
@@ -399,9 +384,7 @@ class NeighborsAnalysis(object):
                     else:
                         znm = znm + 1
         angs = np.array([float(i) for i in ang_at.keys()])
-        norm = np.array(
-            [float(len(i)) / float(len(set(i))) for i in ang_at.values()]
-        )
+        norm = np.array([float(len(i)) / float(len(set(i))) for i in ang_at.values()])
         ang_hist, ang_bins = np.histogram(
             angs, weights=norm, bins=np.arange(1, 181.0, 1), density=False,
         )
@@ -483,23 +466,18 @@ class NeighborsAnalysis(object):
                                     v12 = np.cross(v1, v2)
                                     theta = math.degrees(
                                         math.atan2(
-                                            np.linalg.norm(v2)
-                                            * np.dot(v1, v23),
+                                            np.linalg.norm(v2) * np.dot(v1, v23),
                                             np.dot(v12, v23),
                                         )
                                     )
                                     if theta < 0.00001:
                                         theta = -theta
                                     # print "theta=",theta
-                                    dih_at.setdefault(
-                                        round(theta, 3), []
-                                    ).append(i)
+                                    dih_at.setdefault(round(theta, 3), []).append(i)
         dih = np.array([float(i) for i in dih_at.keys()])
         # dih1 = set(dih)
         # print "dih",dih1
-        norm = np.array(
-            [float(len(i)) / float(len(set(i))) for i in dih_at.values()]
-        )
+        norm = np.array([float(len(i)) / float(len(set(i))) for i in dih_at.values()])
 
         dih_hist1, dih_bins1 = np.histogram(
             dih, weights=norm, bins=np.arange(1, 181.0, 1), density=False,
@@ -535,9 +513,7 @@ class NeighborsAnalysis(object):
         atom_rdfs = []
 
         for i in range(nat):
-            hist, bins = np.histogram(
-                dist[:, i], bins=np.arange(0.1, rcut + 0.2, 0.1)
-            )
+            hist, bins = np.histogram(dist[:, i], bins=np.arange(0.1, rcut + 0.2, 0.1))
             atom_rdfs.append(hist.tolist())
             if self.verbose:
                 exact_dists = np.arange(0.1, rcut + 0.2, 0.1)[hist.nonzero()]

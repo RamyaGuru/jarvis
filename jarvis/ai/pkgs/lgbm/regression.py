@@ -87,10 +87,7 @@ def regression(
     )
     if plot:
         plt.plot(
-            reg_sc["pred"],
-            reg_sc["test"],
-            ".",
-            label=str(type(model).__name__)[0:4],
+            reg_sc["pred"], reg_sc["test"], ".", label=str(type(model).__name__)[0:4],
         )
         plt.legend()
         plt.xlabel("DFT")

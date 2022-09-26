@@ -201,16 +201,12 @@ def get_chem_pot(all_json_data={}):
                 tmp_element = fin_strt.uniq_species[0]
                 # tmp_element = j["final_str"].uniq_species[0]
                 tmp_energy = j["energy_per_atom"]
-                elemental_energies.setdefault(tmp_element, []).append(
-                    [tmp_energy, i]
-                )
+                elemental_energies.setdefault(tmp_element, []).append([tmp_energy, i])
     chem_pot = {}
     for i, j in elemental_energies.items():
         chem_pot[i] = sorted(j, key=lambda x: x[0])[0][0]
     if len(all_possible_species) != len(elemental_energies.keys()):
-        raise ValueError(
-            "Error: Chemical potential for all elements are not available"
-        )
+        raise ValueError("Error: Chemical potential for all elements are not available")
         raise ValueError(all_possible_species, elemental_energies.keys())
     return chem_pot
 
@@ -270,9 +266,7 @@ def parse_material_calculation_folder(
             print("json_file_name", json_file_name)
             print("json_file_path", json_file_path)
             fold_path = os.path.join(path, json_file_path)
-            tmp_info = parse_folder(
-                path=fold_path, atoms_to_dict=atoms_to_dict
-            )
+            tmp_info = parse_folder(path=fold_path, atoms_to_dict=atoms_to_dict)
             info[json_file_name] = tmp_info
             if (
                 "bulk" in json_file_name

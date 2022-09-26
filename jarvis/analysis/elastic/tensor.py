@@ -46,20 +46,25 @@ class ElasticTensor(object):
 
     def long_velocity(self, atoms=None):
         """Longitudinal velocity using Navier equation."""
-        density = atoms.density
+        # density = atoms.density
+        weight = float(atoms.composition.weight)
+        volume = atoms.volume
+        mass_density = 1.6605e3 * weight / volume
         avg_mod = self.average_modulus
         k_vrh = avg_mod[0]
         g_vrh = avg_mod[1]
         # 1e9:= GPa to Pascal (kg/ms^2)
-        vel = np.sqrt(1e9 * (k_vrh + 4.0 / 3.0 * g_vrh) / (density * 1e3))
+        vel = np.sqrt(1e9 * (k_vrh + 4.0 / 3.0 * g_vrh) / mass_density)
         return vel
 
     def trans_velocity(self, atoms=None):
         """Transverse velocity."""
-        density = atoms.density
         avg_mod = self.average_modulus
         g_vrh = avg_mod[1]
-        vel = np.sqrt(1e9 * g_vrh / (density * 1e3))
+        volume = atoms.volume
+        weight = float(atoms.composition.weight)
+        mass_density = 1.6605e3 * weight / volume
+        vel = np.sqrt(1e9 * g_vrh / mass_density)
         return vel
 
     def velocity_average(self, atoms=None):
@@ -67,34 +72,29 @@ class ElasticTensor(object):
         vt = self.trans_velocity(atoms=atoms)
         vl = self.long_velocity(atoms=atoms)
         return 1.0 / (
-            np.cbrt(
-                (1.0 / 3.0) * (2.0 / (vt * vt * vt) + 1.0 / (vl * vl * vl))
-            )
+            np.cbrt((1.0 / 3.0) * (2.0 / (vt * vt * vt) + 1.0 / (vl * vl * vl)))
         )
 
     def debye_temperature(self, atoms=None):
         """Debye temperature."""
         const = 1.05457e-34 / 1.38065e-23  # (h/kb)
-        amu_gm = 1.66054e-24 * 1e-3#convert to kilograms 
-        factor = ((3 * atoms.num_atoms * atoms.density) / (
-            4 * np.pi * atoms.composition.weight * amu_gm
-        )) ** (1/3)
-        theta = const * factor * self.velocity_average(atoms=atoms)
+        v0 = atoms.volume * 1e-30 / atoms.num_atoms
+        vl = self.long_velocity(atoms=atoms)
+        vt = self.trans_velocity(atoms=atoms)
+        vm = 3 ** (1.0 / 3.0) * (1 / vl ** 3 + 2 / vt ** 3) ** (-1.0 / 3.0)
+        theta = const * vm * (6 * np.pi ** 2 / v0) ** (1.0 / 3.0)
         return theta
-    
+
     def debye_temperature_toberer(self, atoms=None):
         const = 1.05457e-34 / 1.38065e-23  # (h/kb)
-        vs =self.velocity_average(atoms)
+        vs = self.velocity_average(atoms)
         V0 = atoms.volume / sum([v for v in atoms.composition.to_dict().values()])
-        return (6 * np.pi**2 / (V0 * 1e-30)) ** (1/3) * vs * const
-        
+        return (6 * np.pi ** 2 / (V0 * 1e-30)) ** (1 / 3) * vs * const
 
     @property
     def average_modulus(self):
         """Get average modulus."""
-        return (
-            np.array(self.voigt_modulus) + np.array(self.reuss_modulus)
-        ) / 2
+        return (np.array(self.voigt_modulus) + np.array(self.reuss_modulus)) / 2
 
     @property
     def pugh_ratio_voigt(self):
@@ -122,7 +122,7 @@ class ElasticTensor(object):
     def melting_temperature_metals(self):
         """Get crude Melting temp. estimate."""
         # https://doi.org/10.1016/0036-9748(84)90267-9
-        avg_mod = self.average_modulus()
+        avg_mod = self.average_modulus
         k_vrh = avg_mod[0]
         return 607 + 9.3 * k_vrh
 

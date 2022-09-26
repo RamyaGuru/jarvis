@@ -90,16 +90,11 @@ class QEjob(object):
             except Exception as exp:
                 print("Exception", exp)
                 pass
-        if (
-            "control" in self.input_params
-            and "prefix" in self.input_params["control"]
-        ):
+        if "control" in self.input_params and "prefix" in self.input_params["control"]:
             print("HERE1")
             xml_path = os.path.abspath(
                 os.path.join(
-                    self.input_params["control"]["prefix"]
-                    .strip('"')
-                    .strip("'")
+                    self.input_params["control"]["prefix"].strip('"').strip("'")
                     + ".save",
                     "data-file-schema.xml",
                 )

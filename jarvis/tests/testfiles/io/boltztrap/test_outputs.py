@@ -17,14 +17,7 @@ example_fold_tgz = os.path.join(
 
 
 example_fold = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "..",
-    "..",
-    "..",
-    "examples",
-    "vasp",
-    "SiOptb88",
+    os.path.dirname(__file__), "..", "..", "..", "..", "examples", "vasp", "SiOptb88",
 )
 
 if not os.path.isdir(example_fold):

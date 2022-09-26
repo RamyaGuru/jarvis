@@ -4,25 +4,12 @@ import os
 import shutil
 
 out = Outcar(
-    os.path.join(
-        os.path.dirname(__file__), "..", "..", "io", "vasp", "OUTCAR.JVASP-39"
-    )
+    os.path.join(os.path.dirname(__file__), "..", "..", "io", "vasp", "OUTCAR.JVASP-39")
 )
 vrun_file = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "..",
-    "io",
-    "vasp",
-    "vasprun.xml.JVASP-39",
+    os.path.dirname(__file__), "..", "..", "io", "vasp", "vasprun.xml.JVASP-39",
 )
-dirc = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "..",
-    "io",
-    "vasp",
-)
+dirc = os.path.join(os.path.dirname(__file__), "..", "..", "io", "vasp",)
 
 vrun = Vasprun(vrun_file)
 

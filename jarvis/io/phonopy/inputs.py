@@ -31,45 +31,27 @@ class PhonopyInputs(object):
             sgp = spaceg.space_group_symbol
             if latt == "rhombohedral":
                 transf = (
-                    np.array(
-                        [[2, -1, -1], [1, 1, -2], [1, 1, 1]], dtype=np.float
-                    )
-                    / 3
+                    np.array([[2, -1, -1], [1, 1, -2], [1, 1, 1]], dtype=np.float) / 3
                 )
             elif "I" in sgp:
                 transf = (
-                    np.array(
-                        [[-1, 1, 1], [1, -1, 1], [1, 1, -1]], dtype=np.float
-                    )
-                    / 2
+                    np.array([[-1, 1, 1], [1, -1, 1], [1, 1, -1]], dtype=np.float) / 2
                 )
 
             elif "F" in sgp:
-                transf = (
-                    np.array([[0, 1, 1], [1, 0, 1], [1, 1, 0]], dtype=np.float)
-                    / 2
-                )
+                transf = np.array([[0, 1, 1], [1, 0, 1], [1, 1, 0]], dtype=np.float) / 2
             elif "A" in sgp:
                 transf = (
-                    np.array(
-                        [[2, 0, 0], [0, 1, -1], [0, 1, 1]], dtype=np.float
-                    )
-                    / 2
+                    np.array([[2, 0, 0], [0, 1, -1], [0, 1, 1]], dtype=np.float) / 2
                 )
             elif "C" in sgp:
                 if latt == "monoclinic":
                     transf = (
-                        np.array(
-                            [[1, 1, 0], [-1, 1, 0], [0, 0, 2]], dtype=np.float
-                        )
-                        / 2
+                        np.array([[1, 1, 0], [-1, 1, 0], [0, 0, 2]], dtype=np.float) / 2
                     )
                 else:
                     transf = (
-                        np.array(
-                            [[1, -1, 0], [1, 1, 0], [0, 0, 2]], dtype=np.float
-                        )
-                        / 2
+                        np.array([[1, -1, 0], [1, 1, 0], [0, 0, 2]], dtype=np.float) / 2
                     )
         else:
             transf = np.eye(3)
@@ -88,11 +70,7 @@ class PhonopyInputs(object):
         return ax_line
 
     def mesh_dos(
-        self,
-        filename="meshdos.conf",
-        dim=[1, 1, 1],
-        factor=521.471,
-        grid=[31, 31, 31],
+        self, filename="meshdos.conf", dim=[1, 1, 1], factor=521.471, grid=[31, 31, 31],
     ):
         """
         Use for DOS and thermal properties.
@@ -114,11 +92,7 @@ class PhonopyInputs(object):
         mesh.close()
 
     def mesh_bands(
-        self,
-        dim=[1, 1, 1],
-        filename="band.conf",
-        factor=521.471,
-        line_density=20,
+        self, dim=[1, 1, 1], filename="band.conf", factor=521.471, line_density=20,
     ):
         """
         Use for making phonon bandstructure plot.

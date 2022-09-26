@@ -69,13 +69,7 @@ def read_fc(filename="FORCE_CONSTANTS"):
     for ii, i in enumerate(lines):
         if ii > 0 and ii % 4 == 0:
             atoms_ids = [int(a) for a in lines[ii - 3].split()]
-            vals = (
-                str(lines[ii - 2])
-                + " "
-                + str(lines[ii - 1])
-                + " "
-                + (lines[ii])
-            )
+            vals = str(lines[ii - 2]) + " " + str(lines[ii - 1]) + " " + (lines[ii])
             vals = np.array(vals.split(), dtype="double").reshape(3, 3)
             fc[atoms_ids[0] - 1, atoms_ids[1] - 1] = vals
     return fc

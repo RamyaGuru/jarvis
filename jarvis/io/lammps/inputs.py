@@ -11,12 +11,7 @@ class LammpsData(object):
     """Construct Lammps data file."""
 
     def __init__(
-        self,
-        lammps_box=[],
-        species=[],
-        charges=[],
-        cart_coords=[],
-        element_order=[],
+        self, lammps_box=[], species=[], charges=[], cart_coords=[], element_order=[],
     ):
         """Provide following information."""
         self._lammps_box = lammps_box
@@ -152,9 +147,7 @@ class LammpsData(object):
                 xz = float(line.split()[1])
                 yz = float(line.split()[2])
         if len(symb) != ntypes:
-            ValueError(
-                "Something wrong in atom type assignment", len(symb), ntypes
-            )
+            ValueError("Something wrong in atom type assignment", len(symb), ntypes)
         lat = np.array(
             [[xhi - xlo, 0.0, 0.0], [xy, yhi - ylo, 0.0], [xz, yz, zhi - zlo]]
         )
@@ -185,10 +178,7 @@ class LammpsData(object):
         typ_sp = [str(i, "utf-8") for i in typ]
         # print ('typ_sp',typ_sp)
         atoms = Atoms(
-            lattice_mat=lat,
-            elements=typ_sp,
-            coords=np.array(coords),
-            cartesian=True,
+            lattice_mat=lat, elements=typ_sp, coords=np.array(coords), cartesian=True,
         )
         return atoms
 
@@ -222,9 +212,7 @@ class LammpsData(object):
             s = self._species[i]
             r = self._cart_coords[i]
             charge = self._charges[i]
-            f.write(
-                "%6d %3d %6f %s %s %s\n" % (i + 1, s, charge, r[0], r[1], r[2])
-            )
+            f.write("%6d %3d %6f %s %s %s\n" % (i + 1, s, charge, r[0], r[1], r[2]))
         f.close()
 
     def to_dict(self):
@@ -272,8 +260,7 @@ class LammpsInput(object):
     def from_dict(self, d={}):
         """Costruct class from a dictionary."""
         return LammpsInput(
-            LammpsDataObj=LammpsData.from_dict(d["LammpsDataObj"]),
-            pbc=d["pbc"],
+            LammpsDataObj=LammpsData.from_dict(d["LammpsDataObj"]), pbc=d["pbc"],
         )
 
     def write_lammps_in(
@@ -370,9 +357,7 @@ class LammpsInput(object):
 
             # default interaction
             f.write(
-                "pair_style lj/cut 2.5 \n"
-                + "pair_coeff * * 1 1 \n"
-                + "mass * 1.0 \n"
+                "pair_style lj/cut 2.5 \n" + "pair_coeff * * 1 1 \n" + "mass * 1.0 \n"
             )
         f1.write("neighbor 1.0 nsq\n")
         f1.write("neigh_modify once no every 1 delay 0 check yes\n")

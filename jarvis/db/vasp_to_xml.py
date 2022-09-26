@@ -180,11 +180,7 @@ class VaspToApiXmlSchema(object):
             except Exception:
                 print("Cannot get the Fermi-velocity.", kp)
                 pass
-            line += (
-                '<fermi_velocities>"'
-                + fermi_velocities
-                + '"</fermi_velocities>'
-            )
+            line += '<fermi_velocities>"' + fermi_velocities + '"</fermi_velocities>'
 
             kp_labels = []
             kp_labels_points = []
@@ -224,11 +220,7 @@ class VaspToApiXmlSchema(object):
                 + ",".join(map(str, kp_labels_points))
                 + '"</kp_labels_points>'
             )
-            line += (
-                '<kp_labels>"'
-                + ",".join(map(str, kp_labels))
-                + '"</kp_labels>'
-            )
+            line += '<kp_labels>"' + ",".join(map(str, kp_labels)) + '"</kp_labels>'
             line += (
                 '<spin_up_bands_x>"'
                 + ";".join(map(str, up_bands_x))
@@ -267,13 +259,9 @@ class VaspToApiXmlSchema(object):
             encut_based_energies = []
             for i in glob.glob("ENCUT*.json"):
                 if "ENCUT" in i:
-                    encut_values.append(
-                        int(str(i.split("-")[-1]).split(".json")[0])
-                    )
+                    encut_values.append(int(str(i.split("-")[-1]).split(".json")[0]))
                     encut_files.append(i)
-                    erun = os.path.join(
-                        folder, i.split(".json")[0], "vasprun.xml"
-                    )
+                    erun = os.path.join(folder, i.split(".json")[0], "vasprun.xml")
                     energy = float(Vasprun(erun).final_energy)
                     encut_based_energies.append(energy)
 
@@ -282,13 +270,9 @@ class VaspToApiXmlSchema(object):
             kp_based_energies = []
             for i in glob.glob("KPOINT*.json"):
                 if "KPOINT" in i:
-                    kp_values.append(
-                        int(str(i.split("-")[-1]).split(".json")[0])
-                    )
+                    kp_values.append(int(str(i.split("-")[-1]).split(".json")[0]))
                     kplength_files.append(i)
-                    krun = os.path.join(
-                        folder, i.split(".json")[0], "vasprun.xml"
-                    )
+                    krun = os.path.join(folder, i.split(".json")[0], "vasprun.xml")
                     energy = float(Vasprun(krun).final_energy)
                     kp_based_energies.append(energy)
             encut_values = np.array(encut_values)
@@ -304,9 +288,7 @@ class VaspToApiXmlSchema(object):
 
             info = {}
             info["converged_encut"] = str(sorted(list(set(encut_values)))[-6])
-            info["converged_kpoint_length"] = str(
-                sorted(list(set(kp_values)))[-6]
-            )
+            info["converged_kpoint_length"] = str(sorted(list(set(kp_values)))[-6])
             info["kp_values"] = "'" + ",".join(map(str, kp_values)) + "'"
             info["kp_based_energies"] = (
                 "'" + ",".join(map(str, kp_based_energies)) + "'"
@@ -399,11 +381,7 @@ class VaspToApiXmlSchema(object):
             except Exception:
                 print("Cannot get the dos Fermi-velocity.")
                 pass
-            line += (
-                '<fermi_velocities>"'
-                + fermi_velocities
-                + '"</fermi_velocities>'
-            )
+            line += '<fermi_velocities>"' + fermi_velocities + '"</fermi_velocities>'
 
         except Exception as exp:
             print("Cannot get DOS data", vrun, exp)
@@ -415,17 +393,9 @@ class VaspToApiXmlSchema(object):
         line = ""
         try:
             two_thetas, d_hkls, intensities = XRD().simulate(atoms=atoms)
-            line += (
-                '<two_thetas>"'
-                + array_to_string(two_thetas)
-                + '"</two_thetas>'
-            )
+            line += '<two_thetas>"' + array_to_string(two_thetas) + '"</two_thetas>'
             line += '<d_hkls>"' + array_to_string(d_hkls) + '"</d_hkls>'
-            line += (
-                '<intensities>"'
-                + array_to_string(intensities)
-                + '"</intensities>'
-            )
+            line += '<intensities>"' + array_to_string(intensities) + '"</intensities>'
         except Exception as exp:
             print("Cannot gt XRD pattern.", exp)
             pass
@@ -447,9 +417,7 @@ class VaspToApiXmlSchema(object):
                 folder = i.split(".json")[0]
                 vrun = os.getcwd() + "/" + folder + "/vasprun.xml"
                 kp = os.getcwd() + "/" + folder + "/KPOINTS"
-                data = self.electronic_band_struct(
-                    vasprun=vrun, kpoints_file_path=kp
-                )
+                data = self.electronic_band_struct(vasprun=vrun, kpoints_file_path=kp)
             except Exception as exp:
                 print("Cannot get ebands info", folder, exp)
                 pass
@@ -468,9 +436,7 @@ class VaspToApiXmlSchema(object):
                 folder = i.split(".json")[0]
                 vrun = os.getcwd() + "/" + folder + "/vasprun.xml"
                 kp = os.getcwd() + "/" + folder + "/KPOINTS"
-                data = self.electronic_band_struct(
-                    vasprun=vrun, kpoints_file_path=kp
-                )
+                data = self.electronic_band_struct(vasprun=vrun, kpoints_file_path=kp)
             except Exception as exp:
                 print("Cannot get hseband info", folder, exp)
                 pass
@@ -489,9 +455,7 @@ class VaspToApiXmlSchema(object):
                 folder = i.split(".json")[0]
                 vrun = os.getcwd() + "/" + folder + "/vasprun.xml"
                 kp = os.getcwd() + "/" + folder + "/KPOINTS"
-                data = self.electronic_band_struct(
-                    vasprun=vrun, kpoints_file_path=kp
-                )
+                data = self.electronic_band_struct(vasprun=vrun, kpoints_file_path=kp)
             except Exception as exp:
                 print("Cannot get ebands info", folder, exp)
                 pass
@@ -522,14 +486,10 @@ class VaspToApiXmlSchema(object):
                 mesh_vrun_y.append(y)
                 mesh_vrun_x.append(x)
             line += (
-                '<mesh_vrun_x>"'
-                + ";".join(map(str, mesh_vrun_x))
-                + '"</mesh_vrun_x>'
+                '<mesh_vrun_x>"' + ";".join(map(str, mesh_vrun_x)) + '"</mesh_vrun_x>'
             )
             line += (
-                '<mesh_vrun_y>"'
-                + ";".join(map(str, mesh_vrun_y))
-                + '"</mesh_vrun_y>'
+                '<mesh_vrun_y>"' + ";".join(map(str, mesh_vrun_y)) + '"</mesh_vrun_y>'
             )
 
             min_arr = []
@@ -569,14 +529,10 @@ class VaspToApiXmlSchema(object):
                 mesh_wann_y.append(y)
                 mesh_wann_x.append(x)
             line += (
-                '<mesh_wann_x>"'
-                + ";".join(map(str, mesh_wann_x))
-                + '"</mesh_wann_x>'
+                '<mesh_wann_x>"' + ";".join(map(str, mesh_wann_x)) + '"</mesh_wann_x>'
             )
             line += (
-                '<mesh_wann_y>"'
-                + ";".join(map(str, mesh_wann_y))
-                + '"</mesh_wann_y>'
+                '<mesh_wann_y>"' + ";".join(map(str, mesh_wann_y)) + '"</mesh_wann_y>'
             )
 
             # High symmetry BZ k-points
@@ -588,16 +544,8 @@ class VaspToApiXmlSchema(object):
                 x = ",".join(map(str, range(0, len(ii))))
                 bz_vrun_y.append(y)
                 bz_vrun_x.append(x)
-            line += (
-                '<bz_vrun_x>"'
-                + ";".join(map(str, bz_vrun_x))
-                + '"</bz_vrun_x>'
-            )
-            line += (
-                '<bz_vrun_y>"'
-                + ";".join(map(str, bz_vrun_y))
-                + '"</bz_vrun_y>'
-            )
+            line += '<bz_vrun_x>"' + ";".join(map(str, bz_vrun_x)) + '"</bz_vrun_x>'
+            line += '<bz_vrun_y>"' + ";".join(map(str, bz_vrun_y)) + '"</bz_vrun_y>'
 
             min_arr = []
             erange = [-energy_tol, energy_tol]
@@ -647,8 +595,7 @@ class VaspToApiXmlSchema(object):
                         data = loadjson(wann_json)
                         line += self.get_wannier_lines(data=data, energy_tol=4)
                         print(
-                            "Getting data from preexisiting wannier json.",
-                            line,
+                            "Getting data from preexisiting wannier json.", line,
                         )
                     else:
                         print("Running jarvis-wannier solver.")
@@ -703,20 +650,14 @@ class VaspToApiXmlSchema(object):
                     vac_vrun_path = os.path.join(
                         folder, "MAIN-VACANCY", i, "vasprun.xml"
                     )
-                    outcar = Outcar(
-                        os.path.join(folder, "MAIN-VACANCY", i, "OUTCAR")
-                    )
+                    outcar = Outcar(os.path.join(folder, "MAIN-VACANCY", i, "OUTCAR"))
                     if outcar.converged:
                         vac_vrun = Vasprun(vac_vrun_path)
                         tmp = i.split("/")[-1].split("_")
                         jid = tmp[0]
                         atom = tmp[2]
-                        Ef = get_twod_defect_energy(
-                            vrun=vac_vrun, jid=jid, atom=atom
-                        )
-                        line += (
-                            jid + "_" + atom + "_" + str(round(Ef, 3)) + ","
-                        )
+                        Ef = get_twod_defect_energy(vrun=vac_vrun, jid=jid, atom=atom)
+                        line += jid + "_" + atom + "_" + str(round(Ef, 3)) + ","
         except Exception as exp:
             print("Cannot get vacancy info.", folder, exp)
             pass
@@ -733,9 +674,7 @@ class VaspToApiXmlSchema(object):
             reals, imags = lvrun.dielectric_loptics
             energies = reals[:, 0]
             line = ""
-            line += (
-                "<energies>'" + ",".join(map(str, energies)) + "'</energies>"
-            )
+            line += "<energies>'" + ",".join(map(str, energies)) + "'</energies>"
             line += '<loptics_dielectric_constant>"'
             line += str(reals[:, 1][0]) + ","
             line += str(reals[:, 2][0]) + ","
@@ -762,17 +701,11 @@ class VaspToApiXmlSchema(object):
             line += "<max_linopt_eps>" + lopt + "</max_linopt_eps>"
             fermi_velocities = ""
             try:
-                fermi_velocities = ",".join(
-                    map(str, lvrun.fermi_velocities[0])
-                )
+                fermi_velocities = ",".join(map(str, lvrun.fermi_velocities[0]))
             except Exception as exp:
                 print("Cannot get the lepsilon Fermi-velocity.", vrun, exp)
                 pass
-            line += (
-                '<fermi_velocities>"'
-                + fermi_velocities
-                + '"</fermi_velocities>'
-            )
+            line += '<fermi_velocities>"' + fermi_velocities + '"</fermi_velocities>'
             for i in np.arange(1, reals.shape[1]):
                 line += (
                     "<real_"
@@ -892,9 +825,7 @@ class VaspToApiXmlSchema(object):
             if sp == {}:
                 # As spillage calculation may take a long time
                 # print("XYZ1")
-                sp = Spillage(
-                    wf_noso=nonsoc_wf, wf_so=soc_wf
-                ).overlap_so_spinpol()
+                sp = Spillage(wf_noso=nonsoc_wf, wf_so=soc_wf).overlap_so_spinpol()
                 # print("XYZ2")
             soc_bands = self.electronic_band_struct(
                 vasprun=soc_wf.replace("WAVECAR", "vasprun.xml"),
@@ -908,14 +839,8 @@ class VaspToApiXmlSchema(object):
             line += "<nonsoc_bands>" + nonsoc_bands + "</nonsoc_bands>"
             spillage_k = ",".join(map(str, sp["spillage_k"]))
             line += "<spillage_k>'" + spillage_k + "'</spillage_k>"
-            spillage_kpoints = ",".join(
-                [";".join(map(str, i)) for i in sp["kpoints"]]
-            )
-            line += (
-                "<spillage_kpoints>'"
-                + spillage_kpoints
-                + "'</spillage_kpoints>"
-            )
+            spillage_kpoints = ",".join([";".join(map(str, i)) for i in sp["kpoints"]])
+            line += "<spillage_kpoints>'" + spillage_kpoints + "'</spillage_kpoints>"
             max_spillage = round(max(sp["spillage_k"]), 3)
             line += "<max_spillage>" + str(max_spillage) + "</max_spillage>"
         except Exception as exp:
@@ -934,14 +859,9 @@ class VaspToApiXmlSchema(object):
                 folder = i.split(".json")[0]
                 soc_wf = os.getcwd() + "/" + folder + "/WAVECAR"
                 nonsoc_wf = (
-                    os.getcwd()
-                    + "/"
-                    + folder.replace("SOC", "MAG")
-                    + "/WAVECAR"
+                    os.getcwd() + "/" + folder.replace("SOC", "MAG") + "/WAVECAR"
                 )
-                data = self.spillage(
-                    soc_wf=soc_wf, nonsoc_wf=nonsoc_wf, jid=jid
-                )
+                data = self.spillage(soc_wf=soc_wf, nonsoc_wf=nonsoc_wf, jid=jid)
             except Exception as exp:
                 print("Cannot get spillage info", folder, exp)
                 pass
@@ -951,10 +871,7 @@ class VaspToApiXmlSchema(object):
         return info
 
     def basic_info(
-        self,
-        include_dos_info=True,
-        include_neighbor_info=True,
-        use_cfid_data=True,
+        self, include_dos_info=True, include_neighbor_info=True, use_cfid_data=True,
     ):
         """Get data from MAIN-RELAX folder."""
         main_folder = self.folder
@@ -1062,13 +979,9 @@ class VaspToApiXmlSchema(object):
                     method = "OptPBEvdW"
                 if method == "PBEMK":
                     method = "OptB86bvdW"
-                if (
-                    "PBEBO" not in info["source_folder"]
-                    and method == "OptB88vdW"
-                ):
+                if "PBEBO" not in info["source_folder"] and method == "OptB88vdW":
                     print(
-                        "Inconsistent description, check INCAR",
-                        info["source_folder"],
+                        "Inconsistent description, check INCAR", info["source_folder"],
                     )
                 info["method"] = method
                 info["tmp_method"] = '"' + method + '"'
@@ -1170,9 +1083,9 @@ class VaspToApiXmlSchema(object):
                 info["xyz"] = '"' + str(xyz).replace("\n", "\\n") + '"'
                 info["poscar_conv"] = (
                     '"'
-                    + str(
-                        conv_atoms.make_supercell_matrix(dim).get_string()
-                    ).replace("\n", "\\n")
+                    + str(conv_atoms.make_supercell_matrix(dim).get_string()).replace(
+                        "\n", "\\n"
+                    )
                     + '"'
                 )
 
@@ -1187,9 +1100,7 @@ class VaspToApiXmlSchema(object):
                     cif_lines = cif_f.read()  # .splitlines()
                     cif_f.close()
                     os.remove(cif_filename)
-                    info["cif"] = (
-                        '"' + str(cif_lines).replace("\n", "\\n") + '"'
-                    )
+                    info["cif"] = '"' + str(cif_lines).replace("\n", "\\n") + '"'
                 except Exception as exp:
                     print("CIF exception", exp)
                     pass
@@ -1238,12 +1149,8 @@ class VaspToApiXmlSchema(object):
                 info["ang1_hist"] = "'" + ",".join(map(str, ang1_hist)) + "'"
                 info["ang2_bins"] = "'" + ",".join(map(str, ang2_bins)) + "'"
                 info["ang2_hist"] = "'" + ",".join(map(str, ang2_hist)) + "'"
-                info["dihedral_bins"] = (
-                    "'" + ",".join(map(str, dhd_bins)) + "'"
-                )
-                info["dihedral_hist"] = (
-                    "'" + ",".join(map(str, dhd_hist)) + "'"
-                )
+                info["dihedral_bins"] = "'" + ",".join(map(str, dhd_bins)) + "'"
+                info["dihedral_hist"] = "'" + ",".join(map(str, dhd_hist)) + "'"
                 try:
                     info["scf_indir_gap"] = round(scf_indir_gap, 3)
                     info["scf_dir_gap"] = round(scf_dir_gap, 3)
@@ -1251,12 +1158,8 @@ class VaspToApiXmlSchema(object):
                     info["scf_indir_gap_cbm"] = round(scf_indir_gap_cbm, 3)
                     info["scf_indir_gap_vbm"] = round(scf_indir_gap_vbm, 3)
                     info["scf_indir_gap_tol"] = round(scf_indir_gap_tol, 3)
-                    info["scf_indir_gap_tol_cbm"] = round(
-                        scf_indir_gap_tol_cbm, 3
-                    )
-                    info["scf_indir_gap_tol_vbm"] = round(
-                        scf_indir_gap_tol_vbm, 3
-                    )
+                    info["scf_indir_gap_tol_cbm"] = round(scf_indir_gap_tol_cbm, 3)
+                    info["scf_indir_gap_tol_vbm"] = round(scf_indir_gap_tol_vbm, 3)
                 except Exception as exp:
                     print("Error in bandgap update info.", exp)
                     pass
@@ -1325,17 +1228,9 @@ class VaspToApiXmlSchema(object):
         # vrun_eigs = data["phonon_eigenvalues"]
         pza = out.piezoelectric_tensor[1]
         max_pza = np.max(np.abs(pza))
-        line += (
-            "<max_piezo_stress_coeff>"
-            + str(max_pza)
-            + "</max_piezo_stress_coeff>"
-        )
+        line += "<max_piezo_stress_coeff>" + str(max_pza) + "</max_piezo_stress_coeff>"
         pz = ",".join([";".join(map(str, pza[:, i])) for i in range(0, 6)])
-        line += (
-            '<dfpt_piezoelectric_tensor>"'
-            + pz
-            + '"</dfpt_piezoelectric_tensor>'
-        )
+        line += '<dfpt_piezoelectric_tensor>"' + pz + '"</dfpt_piezoelectric_tensor>'
 
         # phonon_eigenvalues = out.phonon_eigenvalues
         # phonon_eigenvalues = data["phonon_eigenvalues"]
@@ -1402,8 +1297,7 @@ class VaspToApiXmlSchema(object):
         return info
 
     def elastic_props(
-        self,
-        outcar="MAIN-ELASTIC-bulk@mp-149/OUTCAR",
+        self, outcar="MAIN-ELASTIC-bulk@mp-149/OUTCAR",
     ):
         """Get elastic property data."""
         out = Outcar(outcar)
@@ -1432,9 +1326,7 @@ class VaspToApiXmlSchema(object):
         # print("line", line)
         for i, j in d.items():
             if i != "raw_et_tensor":
-                line += (
-                    "<" + str(i) + ">" + str(round(j, 2)) + "</" + str(i) + ">"
-                )
+                line += "<" + str(i) + ">" + str(round(j, 2)) + "</" + str(i) + ">"
         totdos = outcar.replace("OUTCAR", "total_dos.dat")
         line += '<unit_system>"' + unit_system + '"</unit_system>'
         cwd = str(os.getcwd())
@@ -1490,9 +1382,7 @@ class VaspToApiXmlSchema(object):
             )
 
             # Comment until 4 MB text size error
-            frequencies, distances, labels, label_points = bandstructure_plot(
-                band_yaml
-            )
+            frequencies, distances, labels, label_points = bandstructure_plot(band_yaml)
             tmp = ""
             for i in range(np.array(frequencies).shape[1]):
                 tmp += ",".join(map(str, np.array(frequencies)[:, i])) + ";"
@@ -1566,20 +1456,10 @@ class VaspToApiXmlSchema(object):
                         + array_to_string(data["activity"])
                         + '"</activity>'
                     )
+                    line += '<alpha>"' + array_to_string(data["alpha"]) + '"</alpha>'
+                    line += '<beta2>"' + array_to_string(data["beta2"]) + '"</beta2>'
                     line += (
-                        '<alpha>"'
-                        + array_to_string(data["alpha"])
-                        + '"</alpha>'
-                    )
-                    line += (
-                        '<beta2>"'
-                        + array_to_string(data["beta2"])
-                        + '"</beta2>'
-                    )
-                    line += (
-                        '<indices>"'
-                        + array_to_string(data["beta2"])
-                        + '"</indices>'
+                        '<indices>"' + array_to_string(data["beta2"]) + '"</indices>'
                     )
                     line += (
                         "<max_raman_mode>"
@@ -1593,9 +1473,7 @@ class VaspToApiXmlSchema(object):
         info["raman_dat"] = line
         return info
 
-    def effective_mass_data(
-        self,
-    ):
+    def effective_mass_data(self,):
         """Get effective-mass data."""
         folder = self.folder
         info = {}
@@ -1645,10 +1523,7 @@ class VaspToApiXmlSchema(object):
         return info
 
     def boltztrap_data(
-        self,
-        path="MAIN-RELAX-bulk@mp-149/boltztrap",
-        temperature=600,
-        doping=1e20,
+        self, path="MAIN-RELAX-bulk@mp-149/boltztrap", temperature=600, doping=1e20,
     ):
         """Get transport data."""
         info = {}
@@ -1666,16 +1541,13 @@ class VaspToApiXmlSchema(object):
                 pseeb = np.array(
                     [
                         np.real(r)
-                        for r in np.linalg.eigvals(
-                            tmp["seeb"].reshape(3, 3) * 1e6
-                        )
+                        for r in np.linalg.eigvals(tmp["seeb"].reshape(3, 3) * 1e6)
                     ]
                 )
                 pcond = np.array(
                     [
                         np.real(r)
-                        for r in np.linalg.eigvals(tmp["cond"].reshape(3, 3))
-                        / 1e14
+                        for r in np.linalg.eigvals(tmp["cond"].reshape(3, 3)) / 1e14
                     ]
                 )
                 ppf = pseeb ** 2 * pcond / 1e6
@@ -1692,27 +1564,20 @@ class VaspToApiXmlSchema(object):
                 nseeb = np.array(
                     [
                         np.real(r)
-                        for r in np.linalg.eigvals(
-                            tmp["seeb"].reshape(3, 3) * 1e6
-                        )
+                        for r in np.linalg.eigvals(tmp["seeb"].reshape(3, 3) * 1e6)
                     ]
                 )
                 ncond = np.array(
                     [
                         np.real(r)
-                        for r in np.linalg.eigvals(tmp["cond"].reshape(3, 3))
-                        / 1e14
+                        for r in np.linalg.eigvals(tmp["cond"].reshape(3, 3)) / 1e14
                     ]
                 )
                 npf = nseeb ** 2 * ncond / 1e6
                 nkappa = np.linalg.eigvals(tmp["kappa"].reshape(3, 3))
 
-                info["nseeb"] = np.array(
-                    [round(np.real(r), 2) for r in nseeb.tolist()]
-                )
-                info["ncond"] = np.array(
-                    [round(np.real(r), 2) for r in ncond.tolist()]
-                )
+                info["nseeb"] = np.array([round(np.real(r), 2) for r in nseeb.tolist()])
+                info["ncond"] = np.array([round(np.real(r), 2) for r in ncond.tolist()])
                 info["npf"] = [round(k, 2) for k in npf.tolist()]
                 info["nkappa"] = [round(k, 2) for k in nkappa.tolist()]
         line = ""
@@ -1721,15 +1586,7 @@ class VaspToApiXmlSchema(object):
                 tmp = ";".join(map(str, j))
             else:
                 tmp = j
-            line += (
-                "<"
-                + str(i)
-                + ">'"
-                + ",".join(map(str, j))
-                + "'</"
-                + str(i)
-                + ">"
-            )
+            line += "<" + str(i) + ">'" + ",".join(map(str, j)) + "'</" + str(i) + ">"
         # print (line)
         # print (all_data)
         return line
@@ -1754,8 +1611,7 @@ class VaspToApiXmlSchema(object):
         return info
 
     def image_to_string(
-        self,
-        img_path="2DSTM/PNG_JSON3/JVASP-60776_mp-19795_pos.jpg",
+        self, img_path="2DSTM/PNG_JSON3/JVASP-60776_mp-19795_pos.jpg",
     ):
         """Transform image to string."""
         # 2D array only
@@ -1945,9 +1801,7 @@ class VaspToApiXmlSchema(object):
         # f.write(str(line))
         line += stringdict_to_xml(self.main_soc_spillage(jid=jid)) + "\n"
         # f.write(str(line))
-        line += (
-            stringdict_to_xml(self.efg_tensor(), enforce_string=True) + "\n"
-        )
+        line += stringdict_to_xml(self.efg_tensor(), enforce_string=True) + "\n"
         # f.write(str(line))
         stm_neg = ""
         stm_pos = ""

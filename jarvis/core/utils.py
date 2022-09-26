@@ -17,6 +17,15 @@ def xml_to_dict(fname):
     return data
 
 
+def get_factors(x, start=2):
+    """Get factors of a number."""
+    facts = []
+    for i in range(start, x + 1):
+        if x % i == 0:
+            facts.append(i)
+    return facts
+
+
 def get_counts(array=["W", "W", "Mo", "Mo", "S", "S"]):
     """
     Get number of unique elements and their counts.
@@ -92,14 +101,10 @@ def random_colors(number_of_colors=110):
     return color_dict
 
 
-def get_angle(
-    a=np.array([1, 2, 3]), b=np.array([4, 5, 6]), c=np.array([7, 8, 9])
-):
+def get_angle(a=np.array([1, 2, 3]), b=np.array([4, 5, 6]), c=np.array([7, 8, 9])):
     """Get angle between three vectors."""
     # theta = argcos(x.y/(|x||y|))
-    cos = np.dot((a - b), (c - b)) / (
-        np.linalg.norm((a - b)) * np.linalg.norm((c - b))
-    )
+    cos = np.dot((a - b), (c - b)) / (np.linalg.norm((a - b)) * np.linalg.norm((c - b)))
     if cos <= -1.0:
         cos = cos + 0.000001
     if cos >= 1.0:
@@ -109,8 +114,7 @@ def get_angle(
 
 
 def recast_array_on_uniq_array_elements(
-    uniq=["Si", "Al", "O"],
-    arr=["Si", "Si", "Al", "Al", "Si", "O", "O", "O", "O"],
+    uniq=["Si", "Al", "O"], arr=["Si", "Si", "Al", "Al", "Si", "O", "O", "O", "O"],
 ):
     """Recast array on uniq array elements."""
     info = {}
@@ -123,9 +127,7 @@ def recast_array_on_uniq_array_elements(
 
 def lorentzian(x, y, x0, gamma):
     """Get Lorentzian of a function."""
-    return (y / math.pi) * (
-        (0.5 * gamma) / ((x - x0) ** 2 + (0.5 * gamma) ** 2)
-    )
+    return (y / math.pi) * ((0.5 * gamma) / ((x - x0) ** 2 + (0.5 * gamma) ** 2))
 
 
 # color_dict=random_colors()
@@ -245,12 +247,7 @@ def gaussian(x, sigma):
 
 def lorentzian2(x, gamma):
     """Get Lorentziann profile."""
-    return (
-        gamma
-        / 2
-        / (np.pi * (x ** 2 + (gamma / 2) ** 2))
-        / (2 / (np.pi * gamma))
-    )
+    return gamma / 2 / (np.pi * (x ** 2 + (gamma / 2) ** 2)) / (2 / (np.pi * gamma))
 
 
 def digitize_array(values=[], max_len=10):
@@ -266,14 +263,7 @@ def digitize_array(values=[], max_len=10):
 
 
 def bond_angle(
-    dist1,
-    dist2,
-    bondx1,
-    bondx2,
-    bondy1,
-    bondy2,
-    bondz1,
-    bondz2,
+    dist1, dist2, bondx1, bondx2, bondy1, bondy2, bondz1, bondz2,
 ):
     """Get an angle."""
     nm = dist1 * dist2

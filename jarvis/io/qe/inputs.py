@@ -5,7 +5,8 @@ import requests
 import tarfile
 from jarvis.core.specie import Specie
 import numpy as np
-from jarvis.analysis.structure.spacegroup import Spacegroup3D
+
+# from jarvis.analysis.structure.spacegroup import Spacegroup3D
 
 
 class QEinfile(object):
@@ -35,8 +36,7 @@ class QEinfile(object):
             # Download GBRV PSPs by default
             if url is None:
                 url = (
-                    "http://www.physics.rutgers.edu/"
-                    "gbrv/all_pbesol_UPF_v1.5.tar.gz"
+                    "http://www.physics.rutgers.edu/" "gbrv/all_pbesol_UPF_v1.5.tar.gz"
                 )
             if not os.path.exists(psp_dir):
                 print("Downloading PSPs")
@@ -98,11 +98,14 @@ class QEinfile(object):
                 "prefix" in self.control_params
                 and self.control_params["prefix"] is None
             ):
-                self.control_params[
-                    "prefix"
-                ] = self.atoms.composition.reduced_formula
+                self.control_params["prefix"] = self.atoms.composition.reduced_formula
         else:
             self.control_params = {}
+
+        if "inputa2f" in input_params:
+            self.inputa2f = input_params["inputa2f"]
+        else:
+            self.inputa2f = {}
 
         if "ions" in input_params:
             self.ion_params = input_params["ions"]
@@ -121,9 +124,7 @@ class QEinfile(object):
             ):
                 for ii, jj in enumerate(self.atoms.uniq_species):
                     tmp = "amass(" + str(ii + 1) + ")"
-                    input_params["input"][tmp] = str(
-                        round(Specie(jj).atomic_mass, 2)
-                    )
+                    input_params["input"][tmp] = str(round(Specie(jj).atomic_mass, 2))
 
         else:
             self.input = {}
@@ -133,9 +134,7 @@ class QEinfile(object):
             if "amass(1)" not in input_params["inputph"]:
                 for ii, jj in enumerate(self.atoms.uniq_species):
                     tmp = "amass(" + str(ii + 1) + ")"
-                    input_params["inputph"][tmp] = str(
-                        round(Specie(jj).atomic_mass, 2)
-                    )
+                    input_params["inputph"][tmp] = str(round(Specie(jj).atomic_mass, 2))
         else:
             self.inputph = {}
 
@@ -171,9 +170,7 @@ class QEinfile(object):
                 )
 
             else:
-                print(
-                    "Kpoint scheme not implemented except linemode&automatic"
-                )
+                print("Kpoint scheme not implemented except linemode&automatic")
         return kp
 
     def get_psp(self, element):
@@ -234,7 +231,7 @@ class QEinfile(object):
     def atomic_pos(self):
         """Obtain string for QE atomic positions."""
         line = ""
-        self.atoms = Spacegroup3D(self.atoms).refined_atoms
+        # self.atoms = Spacegroup3D(self.atoms).refined_atoms
         coords = np.array(self.atoms.frac_coords)
         ntot = self.atoms.num_atoms
 
@@ -251,6 +248,7 @@ class QEinfile(object):
         """Obtain string for QE atomic lattice parameters."""
         lat_mat = np.array(self.atoms.lattice_mat)
         if self.sanitize:
+            print("Sanitizing Atoms.")
             a_lat = np.linalg.norm(lat_mat[0, :])
             at = lat_mat / a_lat
             for i in range(3):
@@ -289,6 +287,7 @@ class QEinfile(object):
         cell = ""
         input = ""
         inputph = ""
+        inputa2f = ""
         spec = ""
         if self.control_params:
             control = (
@@ -313,29 +312,22 @@ class QEinfile(object):
             )
         if self.ion_params:
             ions = (
-                "\n&ions\n\n"
-                + self.dictionary_to_string(self.ion_params)
-                + "/"
-                + "\n"
+                "\n&ions\n\n" + self.dictionary_to_string(self.ion_params) + "/" + "\n"
             )
         if self.cell_params:
             cell = (
-                "\n&cell\n\n"
-                + self.dictionary_to_string(self.cell_params)
-                + "/"
-                + "\n"
+                "\n&cell\n\n" + self.dictionary_to_string(self.cell_params) + "/" + "\n"
             )
         if self.input:
-            input = (
-                "\n&input\n\n"
-                + self.dictionary_to_string(self.input)
-                + "/"
-                + "\n"
-            )
+            input = "\n&input\n\n" + self.dictionary_to_string(self.input) + "/" + "\n"
         if self.inputph:
             inputph = (
-                "\n&inputph\n\n"
-                + self.dictionary_to_string(self.inputph)
+                "\n&inputph\n\n" + self.dictionary_to_string(self.inputph) + "/" + "\n"
+            )
+        if self.inputa2f:
+            inputa2f = (
+                "\n&inputa2F\n\n"
+                + self.dictionary_to_string(self.inputa2f)
                 + "/"
                 + "\n"
             )
@@ -349,6 +341,7 @@ class QEinfile(object):
             + cell
             + input
             + inputph
+            + inputa2f
             + spec
             # + "ATOMIC_SPECIES\n\n"
             # + self.atomic_species_string()

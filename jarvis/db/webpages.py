@@ -25,17 +25,9 @@ class Webpage(object):
         self.jid = jid
 
         if "JVASP-" in jid:
-            url = (
-                "https://www.ctcms.nist.gov/~knc6/static/JARVIS-DFT/"
-                + jid
-                + ".xml"
-            )
+            url = "https://www.ctcms.nist.gov/~knc6/static/JARVIS-DFT/" + jid + ".xml"
         if "JLMP-" in jid:
-            url = (
-                "https://www.ctcms.nist.gov/~knc6/static/JARVIS-FF/"
-                + jid
-                + ".xml"
-            )
+            url = "https://www.ctcms.nist.gov/~knc6/static/JARVIS-FF/" + jid + ".xml"
         self.url = url
         self.data = data
         if self.data == []:
@@ -76,97 +68,73 @@ class Webpage(object):
             dtype="float",
         )
         real_part_xx = np.array(
-            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"][
-                "real_1"
-            ]
+            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"]["real_1"]
             .strip("'")
             .split(","),
             dtype="float",
         )
         real_part_yy = np.array(
-            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"][
-                "real_2"
-            ]
+            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"]["real_2"]
             .strip("'")
             .split(","),
             dtype="float",
         )
         real_part_zz = np.array(
-            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"][
-                "real_3"
-            ]
+            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"]["real_3"]
             .strip("'")
             .split(","),
             dtype="float",
         )
         real_part_xy = np.array(
-            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"][
-                "real_4"
-            ]
+            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"]["real_4"]
             .strip("'")
             .split(","),
             dtype="float",
         )
         real_part_yz = np.array(
-            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"][
-                "real_5"
-            ]
+            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"]["real_5"]
             .strip("'")
             .split(","),
             dtype="float",
         )
         real_part_zx = np.array(
-            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"][
-                "real_6"
-            ]
+            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"]["real_6"]
             .strip("'")
             .split(","),
             dtype="float",
         )
         imag_part_xx = np.array(
-            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"][
-                "imag_1"
-            ]
+            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"]["imag_1"]
             .strip("'")
             .split(","),
             dtype="float",
         )
         imag_part_yy = np.array(
-            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"][
-                "imag_2"
-            ]
+            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"]["imag_2"]
             .strip("'")
             .split(","),
             dtype="float",
         )
         imag_part_zz = np.array(
-            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"][
-                "imag_3"
-            ]
+            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"]["imag_3"]
             .strip("'")
             .split(","),
             dtype="float",
         )
         imag_part_xy = np.array(
-            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"][
-                "imag_4"
-            ]
+            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"]["imag_4"]
             .strip("'")
             .split(","),
             dtype="float",
         )
         imag_part_yz = np.array(
-            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"][
-                "imag_5"
-            ]
+            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"]["imag_5"]
             .strip("'")
             .split(","),
             dtype="float",
         )
         imag_part_zx = np.array(
-            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"][
-                "imag_6"
-            ]
+            self.data["basic_info"]["main_optics_mbj"]["main_optics_mbj_info"]["imag_6"]
             .strip("'")
             .split(","),
             dtype="float",
@@ -192,105 +160,105 @@ class Webpage(object):
 
         info = {}
         energies = np.array(
-            self.data["basic_info"]["main_optics_semilocal"][
-                "main_optics_info"
-            ]["energies"]
+            self.data["basic_info"]["main_optics_semilocal"]["main_optics_info"][
+                "energies"
+            ]
             .strip("'")
             .split(","),
             dtype="float",
         )
         real_part_xx = np.array(
-            self.data["basic_info"]["main_optics_semilocal"][
-                "main_optics_info"
-            ]["real_1"]
+            self.data["basic_info"]["main_optics_semilocal"]["main_optics_info"][
+                "real_1"
+            ]
             .strip("'")
             .split(","),
             dtype="float",
         )
         real_part_yy = np.array(
-            self.data["basic_info"]["main_optics_semilocal"][
-                "main_optics_info"
-            ]["real_2"]
+            self.data["basic_info"]["main_optics_semilocal"]["main_optics_info"][
+                "real_2"
+            ]
             .strip("'")
             .split(","),
             dtype="float",
         )
         real_part_zz = np.array(
-            self.data["basic_info"]["main_optics_semilocal"][
-                "main_optics_info"
-            ]["real_3"]
+            self.data["basic_info"]["main_optics_semilocal"]["main_optics_info"][
+                "real_3"
+            ]
             .strip("'")
             .split(","),
             dtype="float",
         )
         real_part_xy = np.array(
-            self.data["basic_info"]["main_optics_semilocal"][
-                "main_optics_info"
-            ]["real_4"]
+            self.data["basic_info"]["main_optics_semilocal"]["main_optics_info"][
+                "real_4"
+            ]
             .strip("'")
             .split(","),
             dtype="float",
         )
         real_part_yz = np.array(
-            self.data["basic_info"]["main_optics_semilocal"][
-                "main_optics_info"
-            ]["real_5"]
+            self.data["basic_info"]["main_optics_semilocal"]["main_optics_info"][
+                "real_5"
+            ]
             .strip("'")
             .split(","),
             dtype="float",
         )
         real_part_zx = np.array(
-            self.data["basic_info"]["main_optics_semilocal"][
-                "main_optics_info"
-            ]["real_6"]
+            self.data["basic_info"]["main_optics_semilocal"]["main_optics_info"][
+                "real_6"
+            ]
             .strip("'")
             .split(","),
             dtype="float",
         )
         imag_part_xx = np.array(
-            self.data["basic_info"]["main_optics_semilocal"][
-                "main_optics_info"
-            ]["imag_1"]
+            self.data["basic_info"]["main_optics_semilocal"]["main_optics_info"][
+                "imag_1"
+            ]
             .strip("'")
             .split(","),
             dtype="float",
         )
         imag_part_yy = np.array(
-            self.data["basic_info"]["main_optics_semilocal"][
-                "main_optics_info"
-            ]["imag_2"]
+            self.data["basic_info"]["main_optics_semilocal"]["main_optics_info"][
+                "imag_2"
+            ]
             .strip("'")
             .split(","),
             dtype="float",
         )
         imag_part_zz = np.array(
-            self.data["basic_info"]["main_optics_semilocal"][
-                "main_optics_info"
-            ]["imag_3"]
+            self.data["basic_info"]["main_optics_semilocal"]["main_optics_info"][
+                "imag_3"
+            ]
             .strip("'")
             .split(","),
             dtype="float",
         )
         imag_part_xy = np.array(
-            self.data["basic_info"]["main_optics_semilocal"][
-                "main_optics_info"
-            ]["imag_4"]
+            self.data["basic_info"]["main_optics_semilocal"]["main_optics_info"][
+                "imag_4"
+            ]
             .strip("'")
             .split(","),
             dtype="float",
         )
         imag_part_yz = np.array(
-            self.data["basic_info"]["main_optics_semilocal"][
-                "main_optics_info"
-            ]["imag_5"]
+            self.data["basic_info"]["main_optics_semilocal"]["main_optics_info"][
+                "imag_5"
+            ]
             .strip("'")
             .split(","),
             dtype="float",
         )
         imag_part_zx = np.array(
-            self.data["basic_info"]["main_optics_semilocal"][
-                "main_optics_info"
-            ]["imag_6"]
+            self.data["basic_info"]["main_optics_semilocal"]["main_optics_info"][
+                "imag_6"
+            ]
             .strip("'")
             .split(","),
             dtype="float",

@@ -38,8 +38,9 @@ simple_regr_models = [
 ]
 
 
-def regression(X=[], Y=[], plot=False, models=simple_regr_models,
-               preprocess=True, test_size=0.1):
+def regression(
+    X=[], Y=[], plot=False, models=simple_regr_models, preprocess=True, test_size=0.1
+):
     """
     Provide model as models to get accuracy.
 
@@ -75,11 +76,9 @@ def regression(X=[], Y=[], plot=False, models=simple_regr_models,
         reg_sc = regr_scores(y_test, pred)
         if plot:
             plt.plot(
-                reg_sc["pred"], reg_sc["test"],
-                ".", label=str(type(i).__name__)[0:4]
+                reg_sc["pred"], reg_sc["test"], ".", label=str(type(i).__name__)[0:4]
             )
-        print(type(i).__name__, round(reg_sc["mae"],
-              3), round(reg_sc["rmse"], 3))
+        print(type(i).__name__, round(reg_sc["mae"], 3), round(reg_sc["rmse"], 3))
         info[type(i).__name__] = {}
         info[type(i).__name__]["mae"] = reg_sc["mae"]
         info[type(i).__name__]["rmse"] = reg_sc["rmse"]

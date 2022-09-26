@@ -117,8 +117,7 @@ def classify_roc_ml(
                         tpr[i],
                         color=color,
                         lw=lw,
-                        label="ROC  {0} (area = {1:0.2f})"
-                        "".format(name, roc_auc[i]),
+                        label="ROC  {0} (area = {1:0.2f})" "".format(name, roc_auc[i]),
                     )
     if plot:
         plt.plot([0, 1], [0, 1], "k--", lw=lw)
@@ -153,20 +152,8 @@ def classification(
         info[type(i).__name__] = {}
         info[type(i).__name__]["roc_auc"] = r
         if save_model:
-            pk = (
-                str(model_name)
-                + "_"
-                + str(type(i).__name__)
-                + "_"
-                + str(".pk")
-            )
-            jb = (
-                str(model_name)
-                + "_"
-                + str(type(i).__name__)
-                + "_"
-                + str(".jb")
-            )
+            pk = str(model_name) + "_" + str(type(i).__name__) + "_" + str(".pk")
+            jb = str(model_name) + "_" + str(type(i).__name__) + "_" + str(".jb")
             pickle.dump(m, open(pk, "wb"))
             joblib.dump(m, jb)
     return info

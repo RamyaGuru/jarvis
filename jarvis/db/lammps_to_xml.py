@@ -51,9 +51,7 @@ def basic_data(data={}, source="JARVIS-FF-LAMMPS"):
     #    + data["bulk_data"]["pair_coeff"]
     #    + "</a>"
     # )
-    info["energy_per_atom"] = round(
-        float(data["bulk_data"]["energy_per_atom"]), 3
-    )
+    info["energy_per_atom"] = round(float(data["bulk_data"]["energy_per_atom"]), 3)
     info["pressure"] = round(float(data["bulk_data"]["system_pressure"]), 3)
 
     initial_spg = Spacegroup3D(initial_atoms)
@@ -78,9 +76,7 @@ def basic_data(data={}, source="JARVIS-FF-LAMMPS"):
         )
         + '"'
     )
-    info["final_str"] = (
-        '"' + str(final_atoms.get_string()).replace("\n", "\\n") + '"'
-    )
+    info["final_str"] = '"' + str(final_atoms.get_string()).replace("\n", "\\n") + '"'
     info["initial_str"] = (
         '"' + str(initial_atoms.get_string()).replace("\n", "\\n") + '"'
     )
@@ -102,14 +98,10 @@ def basic_data(data={}, source="JARVIS-FF-LAMMPS"):
     # print(data["bulk_data"]["elastic_tensor"]["raw_et_tensor"])
     try:
         if data["bulk_data"]["elastic_tensor"] != "":
-            cij = np.round(
-                (data["bulk_data"]["elastic_tensor"]["raw_et_tensor"]), 2
-            )
+            cij = np.round((data["bulk_data"]["elastic_tensor"]["raw_et_tensor"]), 2)
             et = (
                 '<cij>"'
-                + ";".join(
-                    [",".join(map(str, cij[:, i])) for i in range(0, 6)]
-                )
+                + ";".join([",".join(map(str, cij[:, i])) for i in range(0, 6)])
                 + '"</cij>'
             )
 

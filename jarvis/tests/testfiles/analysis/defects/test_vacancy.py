@@ -28,9 +28,7 @@ def test_2d():
     p = Poscar.from_file(C).atoms
     vacs = Vacancy(atoms=p).generate_defects(enforce_c_size=10.0, extend=1)
     # print (vacs[0]._defect_structure)
-    assert (
-        Atoms.from_dict(vacs[0].to_dict()["defect_structure"]).num_atoms == 49
-    )
+    assert Atoms.from_dict(vacs[0].to_dict()["defect_structure"]).num_atoms == 49
 
 
 # test_2d()

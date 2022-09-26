@@ -73,13 +73,7 @@ class SolarEfficiency(object):
         ) * (
             1.0
             / (
-                (
-                    np.exp(
-                        h
-                        * c
-                        / (solar_spectra_wavelength_meters * k * temperature)
-                    )
-                )
+                (np.exp(h * c / (solar_spectra_wavelength_meters * k * temperature)))
                 - 1.0
             )
         )
@@ -110,13 +104,7 @@ class SolarEfficiency(object):
 
         bandgap_blackbody = (
             (2.0 * h * c ** 2 / (bandgap_wavelength ** 5))
-            * (
-                1.0
-                / (
-                    (np.exp(h * c / (bandgap_wavelength * k * temperature)))
-                    - 1.0
-                )
-            )
+            * (1.0 / ((np.exp(h * c / (bandgap_wavelength * k * temperature))) - 1.0))
             * (bandgap_wavelength / (h * c))
         )
 
@@ -129,23 +117,17 @@ class SolarEfficiency(object):
         )
 
         integration_solar_flux = np.concatenate(
-            (solar_spectra_photon_flux[:bandgap_index], bandgap_irradiance),
-            axis=0,
+            (solar_spectra_photon_flux[:bandgap_index], bandgap_irradiance), axis=0,
         )
 
         integration_blackbody = np.concatenate(
-            (
-                blackbody_photon_flux[:bandgap_index],
-                np.array([bandgap_blackbody]),
-            ),
+            (blackbody_photon_flux[:bandgap_index], np.array([bandgap_blackbody]),),
             axis=0,
         )
 
         #  Numerically integrating irradiance over wavelength array
         # Note: elementary charge, not math e!  ## units of A/m**2   W/(V*m**2)
-        J_0_r = (
-            e * np.pi * simps(integration_blackbody, integration_wavelength)
-        )
+        J_0_r = e * np.pi * simps(integration_blackbody, integration_wavelength)
 
         J_0 = J_0_r / fr
 
@@ -277,13 +259,7 @@ class SolarEfficiency(object):
         ) * (
             1.0
             / (
-                (
-                    np.exp(
-                        h
-                        * c
-                        / (solar_spectra_wavelength_meters * k * temperature)
-                    )
-                )
+                (np.exp(h * c / (solar_spectra_wavelength_meters * k * temperature)))
                 - 1.0
             )
         )
@@ -308,10 +284,7 @@ class SolarEfficiency(object):
             material_wavelength_for_absorbance_data,
             material_absorbance_data,
             kind="cubic",
-            fill_value=(
-                material_absorbance_data[0],
-                material_absorbance_data[-1],
-            ),
+            fill_value=(material_absorbance_data[0], material_absorbance_data[-1],),
             bounds_error=False,
         )
 

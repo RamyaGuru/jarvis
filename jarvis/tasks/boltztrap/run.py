@@ -3,9 +3,7 @@ import os
 from jarvis.io.boltztrap.inputs import WriteInputs
 
 
-def run_boltztrap(
-    path="MAIN-RELAX", cmd="~/anaconda2/bin/x_trans BoltzTraP -so"
-):
+def run_boltztrap(path="MAIN-RELAX", cmd="~/anaconda2/bin/x_trans BoltzTraP -so"):
     """Run boltztrap program with vasprun.xml."""
     os.chdir(path)
     try:

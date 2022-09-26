@@ -6,15 +6,18 @@ from jarvis.core.lattice import Lattice, lattice_coords_transformer
 from collections import OrderedDict
 from jarvis.core.utils import get_counts
 import itertools
-from jarvis.core.utils import get_angle
 from jarvis.core.utils import (
     check_duplicate_coords,
     get_new_coord_for_xyz_sym,
+    gcd,
+    get_angle,
 )
 import os
 import math
 import tempfile
 import random
+import string
+import datetime
 
 amu_gm = 1.66054e-24
 ang_cm = 1e-8
@@ -83,9 +86,7 @@ class Atoms(object):
             self.frac_coords = self.coords
             self.cart_coords = np.array(self.lattice.cart_coords(self.coords))
 
-    def write_cif(
-        self, filename="atoms.cif", comment=None, with_spg_info=True
-    ):
+    def write_cif(self, filename="atoms.cif", comment=None, with_spg_info=True):
         """
         Write CIF format file from Atoms object.
 
@@ -123,19 +124,13 @@ class Atoms(object):
         f.write("_cell_angle_gamma    %g\n" % gamma)
         f.write("\n")
         if with_spg_info:
-            line = (
-                "_symmetry_Int_Tables_number  "
-                + str(spg.space_group_number)
-                + "\n"
-            )
+            line = "_symmetry_Int_Tables_number  " + str(spg.space_group_number) + "\n"
         else:
             line = "_symmetry_Int_Tables_number  " + str(1) + "\n"
         f.write(line)
 
         line = (
-            "_chemical_formula_structural  "
-            + str(composition.reduced_formula)
-            + "\n"
+            "_chemical_formula_structural  " + str(composition.reduced_formula) + "\n"
         )
         f.write(line)
         line = "_chemical_formula_sum  " + str(composition.formula) + "\n"
@@ -255,9 +250,7 @@ class Atoms(object):
         box = np.zeros((3, 3))
         for j in range(3):
             box[j, j] = abs(max_c[j] - min_c[j])
-        pdb = Atoms(
-            lattice_mat=box, elements=species, coords=coords, cartesian=True
-        )
+        pdb = Atoms(lattice_mat=box, elements=species, coords=coords, cartesian=True)
         mol = VacuumPadding(pdb, vacuum=20.0).get_effective_molecule()
         return mol
 
@@ -391,9 +384,7 @@ class Atoms(object):
                 beginning_atom_info_line = ii
         while not terminate:
             if "_atom" in lines[beginning_atom_info_line + count + 1]:
-                atom_features.append(
-                    lines[beginning_atom_info_line + count + 1]
-                )
+                atom_features.append(lines[beginning_atom_info_line + count + 1])
             count += 1
             if "_atom" not in lines[beginning_atom_info_line + count]:
                 terminate = True
@@ -458,9 +449,7 @@ class Atoms(object):
                     raise ValueError("Check if labesl are correct.", tmp_lbl)
                 if (
                     occupancy_index != ""
-                    and not float(
-                        tmp[occupancy_index].split("(")[0]
-                    ).is_integer()
+                    and not float(tmp[occupancy_index].split("(")[0]).is_integer()
                 ):
                     raise ValueError(
                         "Fractional occupancy is not supported.",
@@ -492,9 +481,7 @@ class Atoms(object):
                     raise ValueError("Check if labesl are correct.", tmp_lbl)
                 if (
                     occupancy_index != ""
-                    and not float(
-                        tmp[occupancy_index].split("(")[0]
-                    ).is_integer()
+                    and not float(tmp[occupancy_index].split("(")[0]).is_integer()
                 ):
                     raise ValueError(
                         "Fractional occupancy is not supported.",
@@ -510,9 +497,7 @@ class Atoms(object):
                 cartesian=True,
             )
         else:
-            raise ValueError(
-                "Cannot find atomic coordinate info from cart or frac."
-            )
+            raise ValueError("Cannot find atomic coordinate info from cart or frac.")
         # frac_coords=list(cif_atoms.frac_coords)
         cif_elements = cif_atoms.elements
         lat = cif_atoms.lattice.matrix
@@ -520,9 +505,7 @@ class Atoms(object):
             frac_coords = list(cif_atoms.frac_coords)
             for i in symm_ops:
                 for jj, j in enumerate(frac_coords):
-                    new_c_coord = get_new_coord_for_xyz_sym(
-                        xyz_string=i, frac_coord=j
-                    )
+                    new_c_coord = get_new_coord_for_xyz_sym(xyz_string=i, frac_coord=j)
                     new_frac_coord = [new_c_coord][0]
                     if not check_duplicate_coords(frac_coords, new_frac_coord):
                         frac_coords.append(new_frac_coord)
@@ -582,9 +565,7 @@ class Atoms(object):
         lines = f.read().splitlines()
         f.close()
         try:
-            lattice_mat = np.array(lines[1].split(","), dtype="float").reshape(
-                3, 3
-            )
+            lattice_mat = np.array(lines[1].split(","), dtype="float").reshape(3, 3)
         except Exception:
             pass
         coords = []
@@ -600,10 +581,7 @@ class Atoms(object):
             species.append(tmp[0])
         coords = np.array(coords)
         atoms = Atoms(
-            lattice_mat=lattice_mat,
-            coords=coords,
-            elements=species,
-            cartesian=True,
+            lattice_mat=lattice_mat, coords=coords, elements=species, cartesian=True,
         ).center_around_origin(new_origin=[0.5, 0.5, 0.5])
         # print (atoms)
         return atoms
@@ -709,9 +687,7 @@ class Atoms(object):
             cartesian=False,
         )
 
-    def add_site(
-        self, element="Si", coords=[0.1, 0.1, 0.1], props=[], index=0
-    ):
+    def add_site(self, element="Si", coords=[0.1, 0.1, 0.1], props=[], index=0):
         """Ad an atom, coords in fractional coordinates."""
         new_els = list(self.elements)
         new_coords = list(self.frac_coords)
@@ -732,6 +708,21 @@ class Atoms(object):
             props=new_props,
             cartesian=False,
         )
+
+    @property
+    def get_conventional_atoms(self):
+        """Get conventional Atoms using spacegroup information."""
+        from jarvis.analysis.structure.spacegroup import Spacegroup3D
+
+        return Spacegroup3D(self).conventional_standard_structure
+
+    @property
+    def get_spacegroup(self):
+        """Get spacegroup information."""
+        from jarvis.analysis.structure.spacegroup import Spacegroup3D
+
+        spg = Spacegroup3D(self)
+        return [spg.space_group_number, spg.space_group_symbol]
 
     @property
     def get_primitive_atoms(self):
@@ -804,11 +795,7 @@ class Atoms(object):
             pass
         try:
             delta = arr[io3] - arr[io2]
-            while (
-                delta < rcut_buffer
-                and arr[io3] < max_cut
-                and arr[io2] < max_cut
-            ):
+            while delta < rcut_buffer and arr[io3] < max_cut and arr[io2] < max_cut:
                 io2 = io2 + 1
                 io3 = io3 + 1
                 delta = arr[io3] - arr[io2]
@@ -824,15 +811,13 @@ class Atoms(object):
         self, r=5, bond_tol=0.15, c_size=10, verbose=False
     ):
         """Get atomwise distributions."""
-        rcut1, rcut2, neighbors = self.get_neighbors_cutoffs(
-            r=r, bond_tol=bond_tol
-        )
+        rcut1, rcut2, neighbors = self.get_neighbors_cutoffs(r=r, bond_tol=bond_tol)
         from jarvis.analysis.structure.neighbors import NeighborsAnalysis
         from jarvis.core.utils import bond_angle as angle
 
-        nbor_info = NeighborsAnalysis(
-            self, rcut1=rcut1, rcut2=rcut2
-        ).nbor_list(rcut=rcut1, c_size=c_size)
+        nbor_info = NeighborsAnalysis(self, rcut1=rcut1, rcut2=rcut2).nbor_list(
+            rcut=rcut1, c_size=c_size
+        )
         nat = nbor_info["nat"]
         dist = nbor_info["dist"]
         atom_rdfs = []
@@ -841,9 +826,7 @@ class Atoms(object):
         # actual_pangs = []
         actual_pangs = np.zeros((nat, 380))
         for i in range(nat):
-            hist, bins = np.histogram(
-                dist[:, i], bins=np.arange(0.1, rcut1 + 0.2, 0.1)
-            )
+            hist, bins = np.histogram(dist[:, i], bins=np.arange(0.1, rcut1 + 0.2, 0.1))
             actual_prdf.append(dist[:, i])
             atom_rdfs.append(hist.tolist())
             if verbose:
@@ -955,9 +938,7 @@ class Atoms(object):
                 lng = 0.0  # Do not change unit cell size!
             top = lng + height - p1
             shf = 0.5 * (top - p0)
-            cosphi = np.dot(cell[i], dirs[i]) / np.sqrt(
-                np.dot(cell[i], cell[i])
-            )
+            cosphi = np.dot(cell[i], dirs[i]) / np.sqrt(np.dot(cell[i], cell[i]))
             longer[i] = lng / cosphi
             shift[i] = shf / cosphi
 
@@ -975,10 +956,7 @@ class Atoms(object):
                 new_coords -= vector / 2.0
             new_coords += about
         atoms = Atoms(
-            lattice_mat=cell,
-            elements=self.elements,
-            coords=new_coords,
-            cartesian=True,
+            lattice_mat=cell, elements=self.elements, coords=new_coords, cartesian=True,
         )
         return atoms
 
@@ -1016,6 +994,8 @@ class Atoms(object):
     @property
     def num_atoms(self):
         """Get number of atoms."""
+        if np.squeeze(self.coords).ndim == 1:
+            return 1
         return len(self.coords)
 
     @property
@@ -1058,9 +1038,7 @@ class Atoms(object):
             y[i] = self.frac_coords[i][1] - COM[1] + new_origin[1]
             z[i] = self.frac_coords[i][2] - COM[2] + new_origin[2]
             coords.append([x[i], y[i], z[i]])
-        struct = Atoms(
-            lattice_mat=lat, elements=typ_sp, coords=coords, cartesian=False
-        )
+        struct = Atoms(lattice_mat=lat, elements=typ_sp, coords=coords, cartesian=False)
         return struct
 
     def pymatgen_converter(self):
@@ -1113,8 +1091,7 @@ class Atoms(object):
         import spglib
 
         sg = spglib.get_spacegroup(
-            (self.lattice_mat, self.frac_coords, self.atomic_numbers),
-            symprec=symprec,
+            (self.lattice_mat, self.frac_coords, self.atomic_numbers), symprec=symprec,
         )
         return sg
 
@@ -1159,18 +1136,9 @@ class Atoms(object):
         mins = np.min(d_points, axis=0)
         maxes = np.max(d_points, axis=0) + 1
 
-        ar = (
-            np.arange(mins[0], maxes[0])[:, None]
-            * np.array([1, 0, 0])[None, :]
-        )
-        br = (
-            np.arange(mins[1], maxes[1])[:, None]
-            * np.array([0, 1, 0])[None, :]
-        )
-        cr = (
-            np.arange(mins[2], maxes[2])[:, None]
-            * np.array([0, 0, 1])[None, :]
-        )
+        ar = np.arange(mins[0], maxes[0])[:, None] * np.array([1, 0, 0])[None, :]
+        br = np.arange(mins[1], maxes[1])[:, None] * np.array([0, 1, 0])[None, :]
+        cr = np.arange(mins[2], maxes[2])[:, None] * np.array([0, 0, 1])[None, :]
 
         all_points = ar[:, None, None] + br[None, :, None] + cr[None, None, :]
         all_points = all_points.reshape((-1, 3))
@@ -1381,11 +1349,7 @@ class Atoms(object):
         for ii, i in enumerate(coords_ordered):
             if self.show_props:
                 rest = (
-                    rest
-                    + " ".join(map(str, i))
-                    + " "
-                    + str(props_ordered[ii])
-                    + "\n"
+                    rest + " ".join(map(str, i)) + " " + str(props_ordered[ii]) + "\n"
                 )
             else:
                 rest = rest + " ".join(map(str, i)) + "\n"
@@ -1492,10 +1456,7 @@ class VacuumPadding(object):
         frac[:, 2] = frac[:, 2] - np.mean(frac[:, 2]) + 0.5
         frac[:, 2] = frac[:, 2] - np.mean(frac[:, 2]) + 0.5
         with_vacuum_atoms = Atoms(
-            lattice_mat=new_lat,
-            elements=elements,
-            coords=frac,
-            cartesian=False,
+            lattice_mat=new_lat, elements=elements, coords=frac, cartesian=False,
         )
         return with_vacuum_atoms
 
@@ -1550,10 +1511,7 @@ class VacuumPadding(object):
         frac[:, 1] = frac[:, 1] - np.mean(frac[:, 1]) + 0.5
         frac[:, 2] = frac[:, 2] - np.mean(frac[:, 2]) + 0.5
         with_vacuum_atoms = Atoms(
-            lattice_mat=lattice_mat,
-            elements=elements,
-            coords=frac,
-            cartesian=False,
+            lattice_mat=lattice_mat, elements=elements, coords=frac, cartesian=False,
         )
         return with_vacuum_atoms
 
@@ -1583,12 +1541,12 @@ def add_atoms(top, bottom, distance=[0, 0, 1], apply_strain=False):
     """
     top = top.center_around_origin([0, 0, 0])
     bottom = bottom.center_around_origin(distance)
-    strain_x = (
-        top.lattice_mat[0][0] - bottom.lattice_mat[0][0]
-    ) / bottom.lattice_mat[0][0]
-    strain_y = (
-        top.lattice_mat[1][1] - bottom.lattice_mat[1][1]
-    ) / bottom.lattice_mat[1][1]
+    strain_x = (top.lattice_mat[0][0] - bottom.lattice_mat[0][0]) / bottom.lattice_mat[
+        0
+    ][0]
+    strain_y = (top.lattice_mat[1][1] - bottom.lattice_mat[1][1]) / bottom.lattice_mat[
+        1
+    ][1]
     if apply_strain:
         top.apply_strain([strain_x, strain_y, 0])
     #  print("strain_x,strain_y", strain_x, strain_y)
@@ -1619,10 +1577,7 @@ def add_atoms(top, bottom, distance=[0, 0, 1], apply_strain=False):
         print("Serious issue, check lattice vectors.")
         print("Many software follow right hand basis rule only.")
     combined = Atoms(
-        lattice_mat=lattice_mat,
-        coords=coords,
-        elements=elements,
-        cartesian=False,
+        lattice_mat=lattice_mat, coords=coords, elements=elements, cartesian=False,
     ).center_around_origin()
     return combined
 
@@ -1648,13 +1603,13 @@ def pmg_to_atoms(pmg=""):
     )
 
 
-def ase_to_atoms(ase_atoms=""):
+def ase_to_atoms(ase_atoms="", cartesian=True):
     """Convert ase structure to Atoms."""
     return Atoms(
         lattice_mat=ase_atoms.get_cell(),
         elements=ase_atoms.get_chemical_symbols(),
         coords=ase_atoms.get_positions(),
-        #         pbc=True,
+        cartesian=cartesian,
     )
 
 
@@ -1691,6 +1646,160 @@ def crop_square(atoms=None, csize=10):
     return new_atoms
 
 
+class OptimadeAdaptor(object):
+    """Module to work with optimade."""
+
+    def __init__(self, atoms=None):
+        """Intialize class with Atoms object."""
+        self.atoms = atoms
+
+    def reduce(self, content={}):
+        """Reduce chemical formula."""
+        repeat = 0
+        for specie, count in content.items():
+            if repeat == 0:
+                repeat = count
+            else:
+                repeat = gcd(count, repeat)
+        reduced = {}
+        for specie, count in content.items():
+            reduced[specie] = count // repeat
+        return reduced, repeat
+
+    def optimade_reduced_formula(self, content={}, sort_alphabetical=True):
+        """Get chemical formula."""
+        if sort_alphabetical:
+            content = OrderedDict(sorted(content.items(), key=lambda x: (x[0])))
+
+        form = ""
+        reduced, repeat = self.reduce(content)
+        Z = {}
+        for i, j in reduced.items():
+            Z[i] = reduced[i]
+        for specie, count in Z.items():
+            if float(count).is_integer():
+                if count == 1:
+                    form = form + specie
+                else:
+                    form = form + specie + str(int(count))
+            else:
+                form = form + specie + str(count)
+
+        return form  # .replace("1", "")
+
+    def get_optimade_prototype(self, content={}):
+        """Get chemical prototypes such as A, AB etc."""
+        reduced, repeat = self.reduce(content)
+        proto = ""
+        all_upper = string.ascii_uppercase
+        items = sorted(list(reduced.values()), reverse=True)
+        N = 0
+        # for specie, count in reduced.items():
+        for c in items:
+            proto = proto + str(all_upper[N]) + str(round(c, 3))
+            N = N + 1
+        return proto.replace("1", "")
+
+    def get_optimade_species(self):
+        """Get optimade species."""
+        atoms = self.atoms
+        elements = np.array(list(set(atoms.elements)))
+        order = np.argsort(elements)
+        elements = (elements)[order]
+        sp = []
+        for i in elements:
+            info = {}
+            info["name"] = i
+            info["chemical_symbols"] = [i]
+            info["concentration"] = [1.0]
+            info["mass"] = None
+            info["original_name"] = None
+            info["attached"] = None
+            info["nattached"] = None
+            sp.append(info)
+        return sp
+
+    def from_optimade(self, info={}):
+        """Get Atoms from optimade."""
+        lattice_mat = info["attributes"]["lattice_vectors"]
+        elements = info["attributes"]["elements"]
+        coords = info["attributes"]["cartesian_site_positions"]
+        return Atoms(
+            lattice_mat=lattice_mat, elements=elements, coords=coords, cartesian=True,
+        )
+
+    def to_optimade(
+        self,
+        idx="x",
+        itype="structures",
+        source="JARVIS-DFT-3D",
+        reference_url="https://www.ctcms.nist.gov/~knc6/static/JARVIS-DFT/",
+        now=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    ):
+        """Get optimade format data."""
+        atoms = self.atoms
+        info = {}
+        info["id"] = idx
+        info["type"] = itype
+        info_at = {}
+        info_at["_jarvis_source"] = source
+        info_at["_jarvis_reference"] = (
+            reference_url
+            + idx
+            # + ".xml"
+        )
+        comp = atoms.composition.to_dict()
+        info_at["chemical_formula_reduced"] = self.optimade_reduced_formula(comp)
+        info_at["chemical_formula_anonymous"] = self.get_optimade_prototype(comp)
+        elements = np.array(atoms.elements)
+        order = np.argsort(elements)
+        info_at["elements"] = elements[order]
+        info_at["nelements"] = len(elements)
+        info_at["nsites"] = len(atoms.frac_coords)
+        info_at["lattice_vectors"] = atoms.lattice_mat.tolist()
+        info_at["species_at_sites"] = np.array(atoms.elements)[order]
+        info_at["cartesian_site_positions"] = atoms.cart_coords[order].tolist()
+        info_at["nperiodic_dimensions"] = 3
+        # info_at["species"] = atoms.elements
+        info_at[
+            "species"
+        ] = self.get_optimade_species()  # dict(atoms.composition.to_dict())
+        info_at["elements_ratios"] = list(atoms.composition.atomic_fraction.values())
+        info_at["structure_features"] = []
+        info_at["last_modified"] = str(now)
+        # info_at["more_data_available"] = True
+        info_at["chemical_formula_descriptive"] = atoms.composition.reduced_formula
+        info_at["dimension_types"] = [1, 1, 1]
+        info["attributes"] = info_at
+        return info
+
+
+def compare_atoms(atoms1=[], atoms2=[], primitive_cell=True, verbose=True):
+    """Compare atomic strutures."""
+    from jarvis.analysis.structure.spacegroup import Spacegroup3D
+
+    if primitive_cell:
+        atoms1 = atoms1.get_primitive_atoms
+        atoms2 = atoms2.get_primitive_atoms
+    formula1 = atoms1.composition.reduced_formula
+    formula2 = atoms2.composition.reduced_formula
+    if formula1 != formula2:
+        if verbose:
+            print("Formula dont match", formula1, formula2)
+        return False
+    if atoms1.num_atoms != atoms2.num_atoms:
+        if verbose:
+            print("Num_atoms dont match", atoms1.num_atoms, atoms2.num_atoms)
+        return False
+    spg1 = Spacegroup3D(atoms1).space_group_number
+    spg2 = Spacegroup3D(atoms2).space_group_number
+    if spg1 != spg2:
+        if verbose:
+            print("Spg dont match", spg1, spg2)
+        return False
+    return True
+
+
 def build_xanes_poscar(
     atoms=None,
     selected_element="Si",
@@ -1704,9 +1813,7 @@ def build_xanes_poscar(
     # from jarvis.core.utils import rand_select
     from jarvis.analysis.structure.spacegroup import Spacegroup3D
 
-    dims = get_supercell_dims(
-        atoms, enforce_c_size=enforce_c_size, extend=extend
-    )
+    dims = get_supercell_dims(atoms, enforce_c_size=enforce_c_size, extend=extend)
     # spg = Spacegroup3D(atoms)
     # wyckoffs = spg._dataset["wyckoffs"]
     # atoms.props = wyckoffs
@@ -1769,68 +1876,3 @@ def build_xanes_poscar(
 #    elements=[i.strip() for i in atoms['elements']]
 #    info['elements']=elements
 #    return info
-
-"""
-if __name__ == "__main__":
-    x=Atoms.from_cif('1000000.cif')
-    f=open('1000000.cif','r')
-    lines=f.read()
-    f.close()
-    x=Atoms.from_cif(from_string=lines)
-    print (x)
-    print (x.num_atoms)
-    box = [[2.715, 2.715, 0], [0, 2.715, 2.715], [2.715, 0, 2.715]]
-    coords = [[0, 0, 0], [0.25, 0.25, 0.25]]
-    elements = ["Si", "Si"]
-    Si = Atoms(lattice_mat=box, coords=coords, elements=elements)
-    Si.write_xyz("atoms.xyz")
-    from jarvis.io.vasp.inputs import Poscar
-
-    Si = Atoms.from_poscar("/users/knc6/POSCAR")
-    Si.write_cif()
-    a = Atoms.from_cif("atoms.cif")
-    print(a)
-    fn = "/cluster/users/knc6/justback/desc_library/cod/cif/1000052.cif"
-    # fn="/cluster/users/knc6/justback/desc_library/cod/cif/1000443.cif"
-    a = Atoms.from_cif(filename=fn)
-    print (a)
-    Si.write_poscar()
-    print (Si.composition.reduced_formula)
-    #print (Si.get_string())
-    print (Si.get_primitive_atoms)
-    print (Si.raw_distance_matrix)
-    import sys
-    sys.exit()
-    #print (Si.props)
-    #print (Si.make_supercell().props)
-    d = Si.to_dict()
-    print (d)
-    a=Atoms.from_dict(d)
-    print (a)
-    Si = Atoms(lattice_mat=box, coords=coords, elements=elements)
-    Si.props = ["a", "a"]
-    # spg = Spacegroup3D(Si)
-    #polar=Si.check_polar
-    #print ('polar',polar)
-    # Si = spg.conventional_standard_structure
-    # print ('center',Si.center())
-    # print ('propos',Si.props)
-    #print("Supercell\n", Si.make_supercell([2, 2, 2]))
-    # print (Si.make_supercell().props)
-    #print(Si.make_supercell([2, 2, 2]).remove_site_by_index())
-    print ('Si',Si)
-    # print ('reduced',Si.get_lll_reduced_structure())
-    # print ('pf',Si.packing_fraction,Si.make_supercell())
-    pmg = Si.pymatgen_converter()
-    pmg.make_supercell([2, 2, 2])
-    #print (pmg)
-    # print (Si.get_center_of_mass())
-    # print (Si.get_string())
-    a=Atoms.from_cif('ll.cif')
-    print(a)
-    from pymatgen.core.structure import Structure
-    s=Structure.from_file('ll.cif')
-    from pymatgen.io.vasp.inputs import Poscar
-    p=Poscar(s)
-    print (p)
-"""

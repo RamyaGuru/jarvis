@@ -15,7 +15,7 @@ atoms = Atoms.from_dict(tmp_dict)
 
 vasp_cmd = "mpirun /users/knc6/VASP/vasp54/src/vasp.5.4.1DobbySOC2/bin/vasp_std"
 copy_files = ["/users/knc6/bin/vdw_kernel.bindat"]
-submit_cmd = ["qsub",  "submit_job"]
+submit_cmd = ["qsub", "submit_job"]
 jids = ["JVASP-1002", "JVASP-1067"]
 
 for jid in jids:
@@ -40,10 +40,6 @@ for jid in jids:
     name = jid
     directory = os.getcwd()
     Queue.pbs(
-        job_line=job_line,
-        jobname=name,
-        directory=directory,
-        submit_cmd=submit_cmd,
+        job_line=job_line, jobname=name, directory=directory, submit_cmd=submit_cmd,
     )
     os.chdir(cwd_home)
-

@@ -1,4 +1,7 @@
+from jarvis.db.figshare import get_jid_data
+import numpy as np
 from jarvis.analysis.elastic.tensor import ElasticTensor
+from jarvis.core.atoms import Atoms
 import os, tarfile
 from jarvis.io.lammps.outputs import parse_folder
 from jarvis.io.vasp.outputs import Vasprun, Outcar
@@ -17,14 +20,7 @@ example_fold_tgz = os.path.join(
 
 
 example_fold = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "..",
-    "..",
-    "..",
-    "examples",
-    "vasp",
-    "SiOptb88",
+    os.path.dirname(__file__), "..", "..", "..", "..", "examples", "vasp", "SiOptb88",
 )
 
 if not os.path.isdir(example_fold):
@@ -70,7 +66,7 @@ def test_vasp_et():
     print(et.to_dict())
     theta = et.debye_temperature(atoms=atoms)
     print(
-        et.is_brittle, et.is_ductile,et.cauchy_pressure, et.melting_temperature_metals
+        et.is_brittle, et.is_ductile, et.cauchy_pressure, et.melting_temperature_metals
     )
 
 
@@ -124,4 +120,10 @@ def test_lammps_et():
     print(data["elastic_tensor"]["raw_et_tensor"])
 
 
-# test_lammps_et()
+def test_deb():
+    x = get_jid_data(jid="JVASP-19821", dataset="dft_3d")
+    et = ElasticTensor(et_tensor=np.array(x["elastic_tensor"]))
+    atoms = Atoms.from_dict(x["atoms"])
+    dd = et.debye_temperature(atoms=atoms)
+    assert round(dd, 2) == round(1047.547632064132, 2)
+    # test_lammps_et()

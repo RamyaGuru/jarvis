@@ -86,9 +86,7 @@ class XRD(object):
         self.theta = np.arcsin(sintheta)
         self.hkl_list = np.array(hkl_list)
         self.d_hkl = d_hkl
-        fp = os.path.join(
-            os.path.dirname(__file__), "atomic_scattering_params.json"
-        )
+        fp = os.path.join(os.path.dirname(__file__), "atomic_scattering_params.json")
         with open(fp, "r") as f:
             ATOMIC_SCATTERING_PARAMS = json.load(f)
         d0 = (1 / 2 / self.d_hkl) ** 2
@@ -105,9 +103,7 @@ class XRD(object):
         self.peaks = {}
         two_thetas = []
 
-        for hkl, s2, theta, d_hkl in zip(
-            self.hkl_list, d0, self.theta, self.d_hkl
-        ):
+        for hkl, s2, theta, d_hkl in zip(self.hkl_list, d0, self.theta, self.d_hkl):
 
             # Calculate the scattering factor sf
             g_dot_r = np.dot(atoms.frac_coords, np.transpose([hkl])).T[0]
@@ -119,9 +115,7 @@ class XRD(object):
             f = np.sum(sf * np.exp(2j * np.pi * g_dot_r))
 
             # Calculate the lorentz polarization factor lf
-            lf = (1 + np.cos(2 * theta) ** 2) / (
-                np.sin(theta) ** 2 * np.cos(theta)
-            )
+            lf = (1 + np.cos(2 * theta) ** 2) / (np.sin(theta) ** 2 * np.cos(theta))
 
             po = 1
             # Calculate the intensity I

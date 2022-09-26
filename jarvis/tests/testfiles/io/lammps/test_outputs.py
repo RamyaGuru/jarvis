@@ -42,10 +42,12 @@ example_fold_run = os.path.join(
     "Al03.eam.alloy_nist",
     "Al03.eam.alloy_nist",
 )
+
+
 def test_parse_full_ff_folder():
- abspath=os.path.abspath(example_fold_run)
- info = parse_full_ff_folder(abspath)
- print (info)
+    abspath = os.path.abspath(example_fold_run)
+    info = parse_full_ff_folder(abspath)
+    print(info)
 
 
 log_lammps = os.path.join(
@@ -91,6 +93,7 @@ def test_outputs():
         -0.0,
         -3.6,
     )
+
 
 test_parse_full_ff_folder()
 # test_outputs()

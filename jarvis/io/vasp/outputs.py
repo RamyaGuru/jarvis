@@ -36,6 +36,7 @@ class Chgcar(object):
         augdiff=None,
         dim=None,
         nsets=1,
+        lines="",
     ):
         """
         Contain CHGCAR data.
@@ -65,9 +66,19 @@ class Chgcar(object):
         self.aug = aug
         self.augdiff = augdiff
         self.nsets = nsets
+        self.lines = lines
         if self.atoms is None:
-            chg = self.read_file()
-            self.chg = chg
+            if self.filename != "":
+                f = open(self.filename, "r")
+                lines = f.read()
+                chg = self.read_file(lines=lines)
+                self.chg = chg
+                f.close()
+            elif self.lines != "":
+                chg = self.read_file(lines=self.lines)
+                self.chg = chg
+            else:
+                raise ValueError("Check inputs.")
 
     def to_dict(self):
         """Convert to a dictionary."""
@@ -147,11 +158,11 @@ class Chgcar(object):
                     f.write(line)
         return chg
 
-    def read_file(self):
+    def read_file(self, lines=""):
         """Read CHGCAR."""
-        f = open(self.filename, "r")
-        lines = f.read()
-        f.close()
+        # f = open(self.filename, "r")
+        # lines = f.read()
+        # f.close()
         self.atoms = Poscar.from_string(lines).atoms
         volume = self.atoms.volume
         text = lines.splitlines()
@@ -202,9 +213,7 @@ class Chgcar(object):
 class Locpot(Chgcar):
     """Read LOCPOT files."""
 
-    def vac_potential(
-        self, direction="X", Ef=0, filename="Avg.png", plot=True
-    ):
+    def vac_potential(self, direction="X", Ef=0, filename="Avg.png", plot=True):
         """Calculate vacuum potential used in work-function calculation."""
         atoms = self.atoms
         cell = atoms.lattice_mat
@@ -259,9 +268,7 @@ class Locpot(Chgcar):
             ax = plt.gca()
             ax.get_yaxis().get_major_formatter().set_useOffset(False)
             plt.title(
-                str("Energy difference ")
-                + str(round(float(dif), 3))
-                + str(" eV"),
+                str("Energy difference ") + str(round(float(dif), 3)) + str(" eV"),
                 fontsize=26,
             )
             plt.tight_layout()
@@ -484,10 +491,7 @@ class Outcar(object):
             lines = self.data
             cnvg = False
             for i in lines:
-                if (
-                    "General timing and accounting informations for this job"
-                    in i
-                ):
+                if "General timing and accounting informations for this job" in i:
                     cnvg = True
                 if "VASP will stop now." in i:
                     cnvg = True
@@ -555,10 +559,7 @@ class Outcar(object):
         """Get quadrupole momemnt."""
         nions = self.nions
         for ii, i in enumerate(self.data):
-            if (
-                "Q  : nuclear electric quadrupole moment in mb (millibarn)"
-                in i
-            ):
+            if "Q  : nuclear electric quadrupole moment in mb (millibarn)" in i:
                 tmp = ii
         arr = self.data[tmp + 4 : tmp + 4 + nions]
         quad_arr = []
@@ -727,8 +728,7 @@ class Outcar(object):
                 c[5][4] = round(float(c65) / float(10), 1)
                 c[5][5] = round(float(c66) / float(10), 1)
                 KV = float(
-                    (c[0][0] + c[1][1] + c[2][2])
-                    + 2 * (c[0][1] + c[1][2] + c[2][0])
+                    (c[0][0] + c[1][1] + c[2][2]) + 2 * (c[0][1] + c[1][2] + c[2][0])
                 ) / float(9)
                 GV = float(
                     (c[0][0] + c[1][1] + c[2][2])
@@ -947,9 +947,7 @@ class Wavecar(object):
         self.readWFBand()
 
         if self._lsoc:
-            assert (
-                self._nspin == 1
-            ), "NSPIN = 1 for noncollinear version WAVECAR!"
+            assert self._nspin == 1, "NSPIN = 1 for noncollinear version WAVECAR!"
 
     def isSocWfc(self):
         """Check if the WAVECAR is from an SOC calculation."""
@@ -977,21 +975,15 @@ class Wavecar(object):
         self._nkpts = int(dump[0])  # No. of k-points
         self._nbands = int(dump[1])  # No. of bands
         self._encut = dump[2]  # Energy cutoff
-        self._lattice_mat = dump[3:].reshape(
-            (3, 3)
-        )  # real space supercell basis
-        self._Omega = np.linalg.det(
-            self._lattice_mat
-        )  # real space supercell volume
+        self._lattice_mat = dump[3:].reshape((3, 3))  # real space supercell basis
+        self._Omega = np.linalg.det(self._lattice_mat)  # real space supercell volume
         self._Bcell = np.linalg.inv(
             self._lattice_mat
         ).T  # reciprocal space supercell volume
 
         # Minimum FFT grid size
         Anorm = np.linalg.norm(self._lattice_mat, axis=1)
-        CUTOF = np.ceil(
-            np.sqrt(self._encut / RYTOEV) / (TPI / (Anorm / AUTOA))
-        )
+        CUTOF = np.ceil(np.sqrt(self._encut / RYTOEV) / (TPI / (Anorm / AUTOA)))
         self._ngrid = np.array(2 * CUTOF + 1, dtype=int)
 
     def setWFPrec(self):
@@ -1019,12 +1011,8 @@ class Wavecar(object):
         """Extract KS energies and Fermi occupations from WAVECAR."""
         self._nplws = np.zeros(self._nkpts, dtype=int)
         self._kvecs = np.zeros((self._nkpts, 3), dtype=float)
-        self._energies = np.zeros(
-            (self._nspin, self._nkpts, self._nbands), dtype=float
-        )
-        self._occs = np.zeros(
-            (self._nspin, self._nkpts, self._nbands), dtype=float
-        )
+        self._energies = np.zeros((self._nspin, self._nkpts, self._nbands), dtype=float)
+        self._occs = np.zeros((self._nspin, self._nkpts, self._nbands), dtype=float)
 
         for ii in range(self._nspin):
             for jj in range(self._nkpts):
@@ -1119,12 +1107,9 @@ class Wavecar(object):
                 % (Gvec.shape[0], self._nplws[ikpt - 1], np.prod(self._ngrid))
             )
         else:
-            assert (
-                Gvec.shape[0] == self._nplws[ikpt - 1]
-            ), "No. of planewaves not consistent! %d %d %d" % (
-                Gvec.shape[0],
-                self._nplws[ikpt - 1],
-                np.prod(self._ngrid),
+            assert Gvec.shape[0] == self._nplws[ikpt - 1], (
+                "No. of planewaves not consistent! %d %d %d"
+                % (Gvec.shape[0], self._nplws[ikpt - 1], np.prod(self._ngrid),)
             )
         self._gvec = np.asarray(Gvec, dtype=int)
 
@@ -1203,9 +1188,7 @@ class Vasprun(object):
     @property
     def final_energy(self):
         """Get final energy."""
-        return float(
-            self.ionic_steps[-1]["scstep"][-1]["energy"]["i"][11]["#text"]
-        )
+        return float(self.ionic_steps[-1]["scstep"][-1]["energy"]["i"][11]["#text"])
 
     @property
     def nbands(self):
@@ -1244,32 +1227,32 @@ class Vasprun(object):
     def dielectric_loptics(self):
         """Get real and imag. dielectric function data."""
         if isinstance((self.ionic_steps[-1]["dielectricfunction"]), dict):
-            tmp = self.ionic_steps[-1]["dielectricfunction"]["real"]["array"][
-                "set"
-            ]["r"]
+            tmp = self.ionic_steps[-1]["dielectricfunction"]["real"]["array"]["set"][
+                "r"
+            ]
             reals = []
             for i in range(len(tmp)):
                 reals.append([float(j) for j in tmp[i].split()])
 
-            tmp = self.ionic_steps[-1]["dielectricfunction"]["imag"]["array"][
-                "set"
-            ]["r"]
+            tmp = self.ionic_steps[-1]["dielectricfunction"]["imag"]["array"]["set"][
+                "r"
+            ]
             imags = []
             for i in range(len(tmp)):
                 imags.append([float(j) for j in tmp[i].split()])
             reals = np.array(reals)
             imags = np.array(imags)
         elif isinstance((self.ionic_steps[-1]["dielectricfunction"]), list):
-            tmp = self.ionic_steps[-1]["dielectricfunction"][-1]["real"][
-                "array"
-            ]["set"]["r"]
+            tmp = self.ionic_steps[-1]["dielectricfunction"][-1]["real"]["array"][
+                "set"
+            ]["r"]
             reals = []
             for i in range(len(tmp)):
                 reals.append([float(j) for j in tmp[i].split()])
 
-            tmp = self.ionic_steps[-1]["dielectricfunction"][-1]["imag"][
-                "array"
-            ]["set"]["r"]
+            tmp = self.ionic_steps[-1]["dielectricfunction"][-1]["imag"]["array"][
+                "set"
+            ]["r"]
             imags = []
             for i in range(len(tmp)):
                 imags.append([float(j) for j in tmp[i].split()])
@@ -1283,9 +1266,7 @@ class Vasprun(object):
     def avg_absorption_coefficient(self, max_axis=3):
         """Get average absoprtion coefficient. Used in solar-cell module."""
         eV_to_recip_cm = 1.0 / (
-            physical_constants["Planck constant in eV s"][0]
-            * speed_of_light
-            * 1e2
+            physical_constants["Planck constant in eV s"][0] * speed_of_light * 1e2
         )
         real, imag = self.dielectric_loptics
         energies = real[:, 0]
@@ -1324,14 +1305,10 @@ class Vasprun(object):
                 for j in range(natoms):
                     force_constants[i, j] *= -np.sqrt(masses[i] * masses[j])
         phonon_eigenvals = np.array(
-            self.ionic_steps[-1]["dynmat"]["v"]["#text"].split(),
-            dtype="double",
+            self.ionic_steps[-1]["dynmat"]["v"]["#text"].split(), dtype="double",
         )
         eigvecs = np.array(
-            [
-                i.split()
-                for i in (self.ionic_steps[-1]["dynmat"]["varray"][1]["v"])
-            ],
+            [i.split() for i in (self.ionic_steps[-1]["dynmat"]["varray"][1]["v"])],
             dtype="float",
         )
         phonon_eigenvectors = []
@@ -1374,9 +1351,7 @@ class Vasprun(object):
             born_charges.append(
                 [
                     i.split()
-                    for i in (data["modeling"]["calculation"]["array"]["set"])[
-                        n
-                    ]["v"]
+                    for i in (data["modeling"]["calculation"]["array"]["set"])[n]["v"]
                 ]
             )
         born_charges = np.array(born_charges, dtype="double")
@@ -1400,16 +1375,14 @@ class Vasprun(object):
             if self.is_spin_orbit:
                 spin_channels = 1
             levels = int(
-                float(self.all_input_parameters["NELECT"])
-                / float(spin_channels)
+                float(self.all_input_parameters["NELECT"]) / float(spin_channels)
             )
             ups = self.eigenvalues[0][:, :, 0][:, levels]
             dns = self.eigenvalues[0][:, :, 0][:, levels - 1]
             gap = min(ups - dns)
         else:
             tmp = np.concatenate(
-                (self.eigenvalues[0][:, :, 0], self.eigenvalues[1][:, :, 0]),
-                axis=1,
+                (self.eigenvalues[0][:, :, 0], self.eigenvalues[1][:, :, 0]), axis=1,
             )
             cat = np.sort(tmp, axis=1)
             nelect = int(float(self.all_input_parameters["NELECT"]))
@@ -1429,8 +1402,7 @@ class Vasprun(object):
             if self.is_spin_orbit:
                 spin_channels = 1
             levels = int(
-                float(self.all_input_parameters["NELECT"])
-                / float(spin_channels)
+                float(self.all_input_parameters["NELECT"]) / float(spin_channels)
             )
             gap = min(self.eigenvalues[0][:, :, 0][:, levels]) - max(
                 self.eigenvalues[0][:, :, 0][:, levels - 1]
@@ -1440,8 +1412,7 @@ class Vasprun(object):
 
         if self.is_spin_polarized:
             tmp = np.concatenate(
-                (self.eigenvalues[0][:, :, 0], self.eigenvalues[1][:, :, 0]),
-                axis=1,
+                (self.eigenvalues[0][:, :, 0], self.eigenvalues[1][:, :, 0]), axis=1,
             )
             cat = np.sort(tmp, axis=1)
             nelect = int(float(self.all_input_parameters["NELECT"]))
@@ -1453,12 +1424,10 @@ class Vasprun(object):
     def bandgap_occupation_tol(self, occu_tol=0.1):
         """Get bandgap based on occupation tolerance."""
         eigs = np.concatenate(
-            (self.eigenvalues[0][:, :, 0], self.eigenvalues[1][:, :, 0]),
-            axis=1,
+            (self.eigenvalues[0][:, :, 0], self.eigenvalues[1][:, :, 0]), axis=1,
         )
         occs = np.concatenate(
-            (self.eigenvalues[0][:, :, 1], self.eigenvalues[1][:, :, 1]),
-            axis=1,
+            (self.eigenvalues[0][:, :, 1], self.eigenvalues[1][:, :, 1]), axis=1,
         )
 
         vbm = -np.inf
@@ -1524,22 +1493,25 @@ class Vasprun(object):
     @property
     def elements(self):
         """Get atom elements."""
-        element_dat = self._data["modeling"]["atominfo"]["array"][0]["set"][
-            "rc"
-        ]
+        element_dat = self._data["modeling"]["atominfo"]["array"][0]["set"]["rc"]
         if isinstance(element_dat, list):
-            elements = [
-                (element_dat[i]["c"][0]) for i in range(len(element_dat))
-            ]
+            elements = [(element_dat[i]["c"][0]) for i in range(len(element_dat))]
         elif isinstance(element_dat, dict):
             elements = [element_dat["c"][0]]
         else:
             raise ValueError("Unknown element type")
         if len(elements) != self.num_atoms:
             ValueError("Number of atoms is  not equal to number of elements")
-        elements = [str(i) for i in elements]
-        # print ('elements',elements)
-        return elements
+        final_elements = []
+        for i in elements:
+            el = str(i)
+            if el == "X":
+                el = "Xe"
+            if el == "r":
+                el = "Zr"
+            final_elements.append(el)
+
+        return final_elements
 
     def vrun_structure_to_atoms(self, s={}):
         """Convert structure to Atoms object."""
@@ -1549,8 +1521,7 @@ class Vasprun(object):
         # print ('coord_info',coord_info,type(coord_info))
         if isinstance(coord_info, list):
             frac_coords = np.array(
-                [[float(j) for j in i.split()] for i in coord_info],
-                dtype="float",
+                [[float(j) for j in i.split()] for i in coord_info], dtype="float",
             )
         elif isinstance(coord_info, str):
             frac_coords = np.array(coord_info.split(), dtype="float")
@@ -1611,9 +1582,9 @@ class Vasprun(object):
                     [
                         [float(jj) for jj in ii.split()]
                         for ii in (
-                            self.ionic_steps[-1]["eigenvalues"]["array"][
-                                "set"
-                            ]["set"][0]
+                            self.ionic_steps[-1]["eigenvalues"]["array"]["set"]["set"][
+                                0
+                            ]
                         )["set"][j]["r"]
                     ]
                 )
@@ -1623,9 +1594,9 @@ class Vasprun(object):
                     [
                         [float(jj) for jj in ii.split()]
                         for ii in (
-                            self.ionic_steps[-1]["eigenvalues"]["array"][
-                                "set"
-                            ]["set"][1]
+                            self.ionic_steps[-1]["eigenvalues"]["array"]["set"]["set"][
+                                1
+                            ]
                         )["set"][j]["r"]
                     ]
                 )
@@ -1636,9 +1607,7 @@ class Vasprun(object):
                     [
                         [float(jj) for jj in ii.split()]
                         for ii in (
-                            self.ionic_steps[-1]["eigenvalues"]["array"][
-                                "set"
-                            ]["set"]
+                            self.ionic_steps[-1]["eigenvalues"]["array"]["set"]["set"]
                         )["set"][j]["r"]
                     ]
                 )
@@ -1654,9 +1623,12 @@ class Vasprun(object):
         """Get all forces."""
         forces = []
         for m in self.ionic_steps:
-            force = np.array(
-                [[float(j) for j in i.split()] for i in m["varray"][0]["v"]]
-            )
+            if self.all_structures[-1].num_atoms == 1:
+                force = np.array(m["varray"][0]["v"].split(), dtype="float")
+            else:
+                force = np.array(
+                    [[float(j) for j in i.split()] for i in m["varray"][0]["v"]]
+                )
 
             forces.append(force)
         return np.array(forces)
@@ -1709,10 +1681,7 @@ class Vasprun(object):
             ]
         )
         kpwt = np.array(
-            [
-                float(i)
-                for i in self._data["modeling"]["kpoints"]["varray"][1]["v"]
-            ]
+            [float(i) for i in self._data["modeling"]["kpoints"]["varray"][1]["v"]]
         )
         return Kpoints(kpoints=kplist, kpoints_weights=kpwt)
 
@@ -1782,17 +1751,11 @@ class Vasprun(object):
         info["kp_labels"] = list(kp_labels)
         if plot:
             for i, j in zip(info["spin_up_bands_x"], info["spin_up_bands_y"]):
-                plt.plot(
-                    np.array(i).flatten(), np.array(j).flatten(), color="b"
-                )
+                plt.plot(np.array(i).flatten(), np.array(j).flatten(), color="b")
 
             if self.is_spin_polarized:
-                for i, j in zip(
-                    info["spin_down_bands_x"], info["spin_down_bands_y"]
-                ):
-                    plt.plot(
-                        np.array(i).flatten(), np.array(j).flatten(), color="r"
-                    )
+                for i, j in zip(info["spin_down_bands_x"], info["spin_down_bands_y"]):
+                    plt.plot(np.array(i).flatten(), np.array(j).flatten(), color="r")
 
             plt.ylim([E_low, E_high])
             plt.xticks(kp_labels_points, kp_labels)
@@ -1819,17 +1782,17 @@ class Vasprun(object):
             spin_up_data = np.array(
                 [
                     [float(j) for j in i.split()]
-                    for i in self.ionic_steps[-1]["dos"]["total"]["array"][
+                    for i in self.ionic_steps[-1]["dos"]["total"]["array"]["set"][
                         "set"
-                    ]["set"][0]["r"]
+                    ][0]["r"]
                 ]
             )
             spin_dn_data = np.array(
                 [
                     [float(j) for j in i.split()]
-                    for i in self.ionic_steps[-1]["dos"]["total"]["array"][
+                    for i in self.ionic_steps[-1]["dos"]["total"]["array"]["set"][
                         "set"
-                    ]["set"][1]["r"]
+                    ][1]["r"]
                 ]
             )
             spin_dn = -1 * spin_dn_data[:, 1]
@@ -1839,9 +1802,9 @@ class Vasprun(object):
             spin_up_data = np.array(
                 [
                     [float(j) for j in i.split()]
-                    for i in self.ionic_steps[-1]["dos"]["total"]["array"][
+                    for i in self.ionic_steps[-1]["dos"]["total"]["array"]["set"][
                         "set"
-                    ]["set"]["r"]
+                    ]["r"]
                 ]
             )
             spin_up = spin_up_data[:, 1]
@@ -1856,9 +1819,7 @@ class Vasprun(object):
         natoms = self.num_atoms
         nspin = self.nspins
         pdos_keys = self.ionic_steps[-1]["dos"]["partial"]["array"]["field"]
-        steps_dat = self.ionic_steps[-1]["dos"]["partial"]["array"]["set"][
-            "set"
-        ]
+        steps_dat = self.ionic_steps[-1]["dos"]["partial"]["array"]["set"]["set"]
         if self.is_spin_polarized:
             if isinstance(steps_dat, list):
                 for atom in range(natoms):
@@ -1868,9 +1829,9 @@ class Vasprun(object):
                                 [
                                     ii.split()
                                     for ii in (
-                                        self.ionic_steps[-1]["dos"]["partial"][
-                                            "array"
-                                        ]["set"]["set"][atom]["set"][spin]["r"]
+                                        self.ionic_steps[-1]["dos"]["partial"]["array"][
+                                            "set"
+                                        ]["set"][atom]["set"][spin]["r"]
                                     )
                                 ],
                                 dtype="float",
@@ -1885,9 +1846,9 @@ class Vasprun(object):
                             [
                                 ii.split()
                                 for ii in (
-                                    self.ionic_steps[-1]["dos"]["partial"][
-                                        "array"
-                                    ]["set"]["set"]["set"][spin]["r"]
+                                    self.ionic_steps[-1]["dos"]["partial"]["array"][
+                                        "set"
+                                    ]["set"]["set"][spin]["r"]
                                 )
                             ],
                             dtype="float",
@@ -1904,9 +1865,9 @@ class Vasprun(object):
                             [
                                 ii.split()
                                 for ii in (
-                                    self.ionic_steps[-1]["dos"]["partial"][
-                                        "array"
-                                    ]["set"]["set"][atom]["set"]["r"]
+                                    self.ionic_steps[-1]["dos"]["partial"]["array"][
+                                        "set"
+                                    ]["set"][atom]["set"]["r"]
                                 )
                             ],
                             dtype="float",
@@ -1920,9 +1881,9 @@ class Vasprun(object):
                         [
                             ii.split()
                             for ii in (
-                                self.ionic_steps[-1]["dos"]["partial"][
-                                    "array"
-                                ]["set"]["set"]["set"]["r"]
+                                self.ionic_steps[-1]["dos"]["partial"]["array"]["set"][
+                                    "set"
+                                ]["set"]["r"]
                             )
                         ],
                         dtype="float",
@@ -1948,13 +1909,9 @@ class Vasprun(object):
                         vals = [
                             float(ii)
                             for ii in (
-                                self.ionic_steps[-1]["projected"][
-                                    "eigenvalues"
-                                ]["array"]["set"]["set"][spin]["set"][kpoint][
-                                    "r"
-                                ][
-                                    nb
-                                ]
+                                self.ionic_steps[-1]["projected"]["eigenvalues"][
+                                    "array"
+                                ]["set"]["set"][spin]["set"][kpoint]["r"][nb]
                             ).split()
                         ]
                         info[spin][kpoint][nb] = vals
@@ -1964,9 +1921,9 @@ class Vasprun(object):
                     vals = [
                         float(ii)
                         for ii in (
-                            self.ionic_steps[-1]["projected"]["eigenvalues"][
-                                "array"
-                            ]["set"]["set"]["set"][kpoint]["r"][nb]
+                            self.ionic_steps[-1]["projected"]["eigenvalues"]["array"][
+                                "set"
+                            ]["set"]["set"][kpoint]["r"][nb]
                         ).split()
                     ]
                     info[kpoint][nb] = vals
@@ -1993,15 +1950,13 @@ class Vasprun(object):
                             for orbital in dimensions:
                                 val = (
                                     (
-                                        self.ionic_steps[-1]["projected"][
-                                            "array"
-                                        ]["set"]["set"][spin]
+                                        self.ionic_steps[-1]["projected"]["array"][
+                                            "set"
+                                        ]["set"][spin]
                                     )["set"][kpoint]["set"][band]
                                 )["r"][atom].split()
                                 val = [float(v) for v in val]
-                                info[atom][spin][kpoint][band][
-                                    orbital
-                                ] = np.array(val)
+                                info[atom][spin][kpoint][band][orbital] = np.array(val)
         else:
             for atom in range(natoms):
                 for kpoint in range(nkpoints):
@@ -2009,9 +1964,9 @@ class Vasprun(object):
                         for orbital in dimensions:
                             val = (
                                 (
-                                    self.ionic_steps[-1]["projected"]["array"][
+                                    self.ionic_steps[-1]["projected"]["array"]["set"][
                                         "set"
-                                    ]["set"]
+                                    ]
                                 )["set"][kpoint]["set"][band]
                             )["r"][atom].split()
                             val = [float(v) for v in val]
@@ -2086,34 +2041,21 @@ class Vasprun(object):
             if has_f_elements:
                 info["spin_down_f"] = -1 * spin_down_f
             if plot:
-                plt.plot(
-                    info["energy"], info["spin_up_s"], color="red", label="s"
-                )
+                plt.plot(info["energy"], info["spin_up_s"], color="red", label="s")
 
-                plt.plot(
-                    info["energy"], info["spin_up_p"], color="green", label="p"
-                )
+                plt.plot(info["energy"], info["spin_up_p"], color="green", label="p")
 
-                plt.plot(
-                    info["energy"], info["spin_up_d"], color="blue", label="d"
-                )
+                plt.plot(info["energy"], info["spin_up_d"], color="blue", label="d")
                 if has_f_elements:
                     plt.plot(
-                        info["energy"],
-                        info["spin_up_f"],
-                        color="black",
-                        label="f",
+                        info["energy"], info["spin_up_f"], color="black", label="f",
                     )
                 if spin_pol:
                     plt.plot(info["energy"], info["spin_down_s"], color="red")
-                    plt.plot(
-                        info["energy"], info["spin_down_p"], color="green"
-                    )
+                    plt.plot(info["energy"], info["spin_down_p"], color="green")
                     plt.plot(info["energy"], info["spin_down_d"], color="blue")
                 if has_f_elements:
-                    plt.plot(
-                        info["energy"], info["spin_down_f"], color="black"
-                    )
+                    plt.plot(info["energy"], info["spin_down_f"], color="black")
                 plt.xlim([-5, 10])
                 plt.legend()
         return info
@@ -2127,9 +2069,7 @@ class Vasprun(object):
         unique_elements = atoms.uniq_species
         pdos = self.partial_dos_spdf  # spin,atom,spdf
         energy = pdos[0][0]["energy"] - self.efermi
-        element_dict = recast_array_on_uniq_array_elements(
-            unique_elements, elements
-        )
+        element_dict = recast_array_on_uniq_array_elements(unique_elements, elements)
         valid_keys = []
         info = {}
         info["spin_up_info"] = {}
@@ -2171,9 +2111,7 @@ class Vasprun(object):
         return info
 
 
-def parse_raman_dat(
-    vasp_raman_path="RAMANDIR-bulk@JVASP-1002_mp-149/vasp_raman.dat",
-):
+def parse_raman_dat(vasp_raman_path="RAMANDIR-bulk@JVASP-1002_mp-149/vasp_raman.dat",):
     """
     Parse vasp_raman.dat .
 

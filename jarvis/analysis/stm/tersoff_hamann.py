@@ -76,8 +76,7 @@ class TersoffHamannSTM(object):
         self.dpi = dpi
 
     def constant_height(
-        self,
-        filename="testh.png",
+        self, filename="testh.png",
     ):
         """Get iso-height image."""
         tol = self.height_tol
@@ -103,10 +102,7 @@ class TersoffHamannSTM(object):
             else:
                 tmp = 0
             data = self.get_plot(
-                ax,
-                img_ext,
-                exts,
-                mtransforms.Affine2D().skew_deg(tmp, 0),
+                ax, img_ext, exts, mtransforms.Affine2D().skew_deg(tmp, 0),
             )
             info["data"] = data
             info["img_ext"] = img_ext
@@ -128,9 +124,7 @@ class TersoffHamannSTM(object):
             plt.close()
 
             plt.gca().set_axis_off()
-            plt.subplots_adjust(
-                top=1, bottom=0, right=1, left=0, hspace=0, wspace=0
-            )
+            plt.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
             plt.margins(0, 0)
             plt.gca().xaxis.set_major_locator(plt.NullLocator())
             plt.gca().yaxis.set_major_locator(plt.NullLocator())
@@ -162,11 +156,7 @@ class TersoffHamannSTM(object):
         return info
 
     def constant_current(
-        self,
-        pc=None,
-        ext=0.15,
-        filename="testc.png",
-        use_interpolated=True,
+        self, pc=None, ext=0.15, filename="testc.png", use_interpolated=True,
     ):
         """Return the constant-current cut the charge density."""
         zmax_ind = int(self.zmaxp / self.c * self.nz) + 1
@@ -207,10 +197,7 @@ class TersoffHamannSTM(object):
                 tmp = 0
 
             data = self.get_plot(
-                ax,
-                img_ext,
-                exts,
-                mtransforms.Affine2D().skew_deg(tmp, 0),
+                ax, img_ext, exts, mtransforms.Affine2D().skew_deg(tmp, 0),
             )
             info["data"] = data
             info["img_ext"] = img_ext
@@ -260,10 +247,7 @@ class TersoffHamannSTM(object):
         # display intended extent of the image
         x1, x2, y1, y2 = im.get_extent()
         data = ax.plot(
-            [x1, x2, x2, x1, x1],
-            [y1, y1, y2, y2, y1],
-            "y--",
-            transform=trans_data,
+            [x1, x2, x2, x1, x1], [y1, y1, y2, y2, y1], "y--", transform=trans_data,
         )
         print("min Z and maxZ", np.min(Z), np.max(Z))
         return data
@@ -285,9 +269,7 @@ class TersoffHamannSTM(object):
                 zz.append(z)
                 xy.append([xyz[0], xyz[1]])
 
-        grid_x, grid_y = np.mgrid[
-            min(x) : max(x) : step, min(y) : max(y) : step
-        ]
+        grid_x, grid_y = np.mgrid[min(x) : max(x) : step, min(y) : max(y) : step]
         # stepx=(max(x)-min(x))/bins
         # stepy=(max(y)-min(y))/bins
         # grid_x, grid_y = np.mgrid[min(x):max(x):stepx, min(y):max(y):stepy]

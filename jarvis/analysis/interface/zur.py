@@ -50,15 +50,9 @@ class ZSLGenerator(object):
 
             vec_set2(array[array]): second array of two vectors
         """
-        if (
-            np.absolute(rel_strain(vec_set1[0], vec_set2[0]))
-            > self.max_length_tol
-        ):
+        if np.absolute(rel_strain(vec_set1[0], vec_set2[0])) > self.max_length_tol:
             return False
-        elif (
-            np.absolute(rel_strain(vec_set1[1], vec_set2[1]))
-            > self.max_length_tol
-        ):
+        elif np.absolute(rel_strain(vec_set1[1], vec_set2[1])) > self.max_length_tol:
             return False
         elif np.absolute(rel_angle(vec_set1, vec_set2)) > self.max_angle_tol:
             return False
@@ -122,14 +116,10 @@ class ZSLGenerator(object):
             substrate_vectors(array): substrate vectors to generate super
                 lattices
         """
-        for (
-            film_transformations,
-            substrate_transformations,
-        ) in transformation_sets:
+        for (film_transformations, substrate_transformations,) in transformation_sets:
             # Apply transformations and reduce using Zur reduce methodology
             films = [
-                reduce_vectors(*np.dot(f, film_vectors))
-                for f in film_transformations
+                reduce_vectors(*np.dot(f, film_vectors)) for f in film_transformations
             ]
 
             substrates = [
@@ -243,11 +233,7 @@ def rel_angle(vec_set1, vec_set2):
 
         vec_set2(array[array]): second array of two vectors.
     """
-    return (
-        vec_angle(vec_set2[0], vec_set2[1])
-        / vec_angle(vec_set1[0], vec_set1[1])
-        - 1
-    )
+    return vec_angle(vec_set2[0], vec_set2[1]) / vec_angle(vec_set1[0], vec_set1[1]) - 1
 
 
 def fast_norm(a):
@@ -357,13 +343,9 @@ def make_interface(
     uv_substrate = uv1
     uv_film = uv2
     substrate_latt = Lattice(
-        np.array(
-            [uv_substrate[0][:], uv_substrate[1][:], subs.lattice_mat[2, :]]
-        )
+        np.array([uv_substrate[0][:], uv_substrate[1][:], subs.lattice_mat[2, :]])
     )
-    _, __, scell = subs.lattice.find_matches(
-        substrate_latt, ltol=ltol, atol=atol
-    )
+    _, __, scell = subs.lattice.find_matches(substrate_latt, ltol=ltol, atol=atol)
     film_latt = Lattice(
         np.array([uv_film[0][:], uv_film[1][:], film.lattice_mat[2, :]])
     )
@@ -393,12 +375,10 @@ def make_interface(
         * np.array(subs_scell.lattice_mat[2, :])
         / np.linalg.norm(subs_scell.lattice_mat[2, :])
     )
-    shift_normal = (
-        sub_z / np.linalg.norm(sub_z) * seperation / np.linalg.norm(sub_z)
+    shift_normal = sub_z / np.linalg.norm(sub_z) * seperation / np.linalg.norm(sub_z)
+    tmp = (thickness_film / 2 + seperation + thickness_sub / 2) / np.linalg.norm(
+        subs_scell.lattice_mat[2, :]
     )
-    tmp = (
-        thickness_film / 2 + seperation + thickness_sub / 2
-    ) / np.linalg.norm(subs_scell.lattice_mat[2, :])
     shift_normal = (
         tmp
         * np.array(subs_scell.lattice_mat[2, :])
@@ -407,9 +387,7 @@ def make_interface(
     interface = add_atoms(
         film_scell, subs_scell, shift_normal, apply_strain=apply_strain
     ).center_around_origin([0, 0, 0.5])
-    combined = interface.center(vacuum=vacuum).center_around_origin(
-        [0, 0, 0.5]
-    )
+    combined = interface.center(vacuum=vacuum).center_around_origin([0, 0, 0.5])
     info["interface"] = combined
     return info
 

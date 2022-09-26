@@ -70,9 +70,7 @@ class WTOut(object):
         return chrn
 
 
-def parse_chern_dat(
-    chern_dat="wanniercenter3D_Chern.dat", filename="mychern.png"
-):
+def parse_chern_dat(chern_dat="wanniercenter3D_Chern.dat", filename="mychern.png"):
     """Plot wanniercenter3D_Chern.dat file."""
     x = np.loadtxt(chern_dat)
     if filename is not None:

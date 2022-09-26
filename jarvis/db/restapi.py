@@ -41,9 +41,7 @@ class Api(object):
         """Gat data file info for a hash_id."""
         template_upload_url = "/rest/data/" + str(id) + str("/")
         turl = self.base_url + template_upload_url + str("/?format=json")
-        response = requests.get(
-            turl, verify=False, auth=(self.username, self.password)
-        )
+        response = requests.get(turl, verify=False, auth=(self.username, self.password))
         if response.ok:
             return response.json()
         else:
@@ -67,9 +65,7 @@ class Api(object):
     def get_global_workspace_id(self):
         """Get workspace ID."""
         turl = self.base_url + "/rest/workspace/"
-        response = requests.get(
-            turl, verify=False, auth=(self.username, self.password)
-        )
+        response = requests.get(turl, verify=False, auth=(self.username, self.password))
         workspace_list = json.loads(response.text)
         for workspace in workspace_list:
             if workspace["title"] == "Global Public Workspace":
@@ -77,10 +73,7 @@ class Api(object):
         return global_workspace_id
 
     def upload_xml_file(
-        self,
-        filename="",
-        workspace_id="5df7b6defb7e53000c4652aa",
-        template_id="",
+        self, filename="", workspace_id="5df7b6defb7e53000c4652aa", template_id="",
     ):
         """Upload file using path of the file and schema/template id."""
         print("status: uploading data file...")
@@ -151,9 +144,7 @@ class Api(object):
             return response.json()
         else:
             response.raise_for_status()
-            raise Exception(
-                "- error: a problem occurred when getting the template"
-            )
+            raise Exception("- error: a problem occurred when getting the template")
 
     def get_all_xmls(self):
         """Get all XML data. Used for deleting."""
@@ -185,9 +176,7 @@ class Api(object):
         turl = self.base_url + xml_upload_url
         print("turl", turl)
         input = {"query": query}
-        response = requests.post(
-            turl, data=input, auth=(self.username, self.password)
-        )
+        response = requests.post(turl, data=input, auth=(self.username, self.password))
         out = response.json()
         params = {"page": 2}
         mem = []
@@ -222,9 +211,7 @@ class Api(object):
         turl = self.base_url + xml_upload_url
         print("turl", turl)
         input = {"query": query}
-        response = requests.post(
-            turl, data=input, auth=(self.username, self.password)
-        )
+        response = requests.post(turl, data=input, auth=(self.username, self.password))
         out = response.json()
         f = open("tmpout", "w")
         f.write(json.dumps(out))
@@ -235,10 +222,7 @@ class Api(object):
 
         while out["next"] is not None:
             response = requests.post(
-                turl,
-                data=input,
-                params=params,
-                auth=(self.username, self.password),
+                turl, data=input, params=params, auth=(self.username, self.password),
             )
             out = response.json()
             # data.extend(out["results"])
@@ -261,18 +245,13 @@ class Api(object):
         # input={"query":"JVASP-1002.xml"}
         # input={"query":".xml"}
         input = {"query": query}
-        response = requests.post(
-            turl, data=input, auth=(self.username, self.password)
-        )
+        response = requests.post(turl, data=input, auth=(self.username, self.password))
         out = response.json()
         data = out["results"]
         params = {"page": 2}
         while out["next"] is not None:
             response = requests.post(
-                turl,
-                data=input,
-                params=params,
-                auth=(self.username, self.password),
+                turl, data=input, params=params, auth=(self.username, self.password),
             )
             out = response.json()
             data.extend(out["results"])
@@ -306,9 +285,7 @@ class Api(object):
     def get_all_blobs(self):
         """Download binary blob files."""
         turl = self.base_url + "/rest/blob/"
-        response = requests.get(
-            turl, verify=False, auth=(self.username, self.password)
-        )
+        response = requests.get(turl, verify=False, auth=(self.username, self.password))
         # print ('response.json()',response.json())
         print("All blob doownload response.status_code", response.status_code)
         return response.json()
@@ -317,9 +294,7 @@ class Api(object):
         """Download a binary blob file."""
         turl = self.base_url + "/rest/blob/" + bid + "/"
         # turl = self.base_url + "/rest/blob/download/" + bid + "/"
-        response = requests.get(
-            turl, verify=False, auth=(self.username, self.password)
-        )
+        response = requests.get(turl, verify=False, auth=(self.username, self.password))
         resp = OrderedDict(response.json())
         data = requests.get(
             resp["handle"], verify=False, auth=(self.username, self.password)
@@ -358,9 +333,7 @@ class Api(object):
         for i in glob.glob(files):
             jid = i.split("/")[-1].split(".xml")[0]
             try:
-                upload_id = self.upload_xml_file(
-                    filename=i, template_id=template_id
-                )
+                upload_id = self.upload_xml_file(filename=i, template_id=template_id)
                 info = {}
                 info["jid"] = jid
                 info["api_id"] = upload_id
@@ -389,9 +362,7 @@ class Api(object):
             jid = i.split("/")[-1].split(".xml")[0]
             print(jid)
             try:
-                upload_id = self.upload_xml_file(
-                    filename=i, template_id=template_id
-                )
+                upload_id = self.upload_xml_file(filename=i, template_id=template_id)
                 print(jid)
                 info = {}
                 info["jid"] = jid

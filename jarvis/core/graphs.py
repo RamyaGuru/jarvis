@@ -22,10 +22,7 @@ except Exception as exp:
 
 
 def canonize_edge(
-    src_id,
-    dst_id,
-    src_image,
-    dst_image,
+    src_id, dst_id, src_image, dst_image,
 ):
     """Compute canonical edge representation.
 
@@ -49,11 +46,7 @@ def canonize_edge(
 
 
 def nearest_neighbor_edges(
-    atoms=None,
-    cutoff=8,
-    max_neighbors=12,
-    id=None,
-    use_canonize=False,
+    atoms=None, cutoff=8, max_neighbors=12, id=None, use_canonize=False,
 ):
     """Construct k-NN edge list."""
     # returns List[List[Tuple[site, distance, index, image]]]
@@ -125,8 +118,7 @@ def nearest_neighbor_edges(
 
 
 def build_undirected_edgedata(
-    atoms=None,
-    edges={},
+    atoms=None, edges={},
 ):
     """Build undirected graph data from edge set.
 
@@ -142,9 +134,7 @@ def build_undirected_edgedata(
             # fractional coordinate for periodic image of dst
             dst_coord = atoms.frac_coords[dst_id] + dst_image
             # cartesian displacement vector pointing from src -> dst
-            d = atoms.lattice.cart_coords(
-                dst_coord - atoms.frac_coords[src_id]
-            )
+            d = atoms.lattice.cart_coords(dst_coord - atoms.frac_coords[src_id])
             # if np.linalg.norm(d)!=0:
             # print ('jv',dst_image,d)
             # add edges for both directions
@@ -153,6 +143,7 @@ def build_undirected_edgedata(
                 v.append(vv)
                 r.append(dd)
 
+    u, v, r = (np.array(x) for x in (u, v, r))
     u = torch.tensor(u)
     v = torch.tensor(v)
     r = torch.tensor(r).type(torch.get_default_dtype())
@@ -229,9 +220,7 @@ class Graph(object):
             #    feat=feat+list(prdf[ii])+list(adf[ii])
             sps_features.append(feat)
         sps_features = np.array(sps_features)
-        node_features = torch.tensor(sps_features).type(
-            torch.get_default_dtype()
-        )
+        node_features = torch.tensor(sps_features).type(torch.get_default_dtype())
         g = dgl.graph((u, v))
         g.ndata["atom_features"] = node_features
         g.edata["r"] = r
@@ -296,8 +285,7 @@ class Graph(object):
         nodes = np.arange(atoms.num_atoms)
         if features == "atomic_number":
             node_attributes = np.array(
-                [[np.array(Specie(i).Z)] for i in atoms.elements],
-                dtype="float",
+                [[np.array(Specie(i).Z)] for i in atoms.elements], dtype="float",
             )
         if features == "atomic_fraction":
             node_attributes = []
@@ -546,9 +534,7 @@ class StructureDataset(torch.utils.data.Dataset):
 
         self.labels = self.df[target]
         self.ids = self.df[id_tag]
-        self.labels = torch.tensor(self.df[target]).type(
-            torch.get_default_dtype()
-        )
+        self.labels = torch.tensor(self.df[target]).type(torch.get_default_dtype())
         self.transform = transform
 
         features = self._get_attribute_lookup(atom_features)
@@ -627,9 +613,7 @@ class StructureDataset(torch.utils.data.Dataset):
         self.atom_feature_mean = x.mean(0)
         self.atom_feature_std = x.std(0)
 
-        self.transform = Standardize(
-            self.atom_feature_mean, self.atom_feature_std
-        )
+        self.transform = Standardize(self.atom_feature_mean, self.atom_feature_std)
 
     @staticmethod
     def collate(samples: List[Tuple[dgl.DGLGraph, torch.Tensor]]):

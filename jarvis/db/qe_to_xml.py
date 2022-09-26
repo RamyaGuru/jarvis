@@ -15,8 +15,7 @@ from jarvis.analysis.thermodynamics.energetics import (
 
 
 def parse_material_calculation_folder(
-    path="Ag_Al_kspace/dimer.in_vnscf_coords_min_2",
-    source="JARVIS-DFT-QE",
+    path="Ag_Al_kspace/dimer.in_vnscf_coords_min_2", source="JARVIS-DFT-QE",
 ):
     """Parse QE calculation folder."""
     save_path = os.path.join(path, "qe.save")
@@ -98,9 +97,7 @@ def parse_material_calculation_folder(
                 info[ii] = jj
             final_strt = data_schm.final_structure
             info["final_structure"] = (
-                "'"
-                + data_schm.final_structure.get_string().replace("\n", "\\n")
-                + "'"
+                "'" + data_schm.final_structure.get_string().replace("\n", "\\n") + "'"
             )
             try:
                 print("data_schm.final_energy", data_schm.final_energy)
@@ -116,9 +113,9 @@ def parse_material_calculation_folder(
             dim = get_supercell_dims(final_strt)
             info["xyz"] = (
                 '"'
-                + str(
-                    final_strt.make_supercell_matrix(dim).get_xyz_string
-                ).replace("\n", "\\n")
+                + str(final_strt.make_supercell_matrix(dim).get_xyz_string).replace(
+                    "\n", "\\n"
+                )
                 + '"'
             )
             info["natoms"] = final_strt.num_atoms
@@ -158,9 +155,7 @@ def parse_material_calculation_folder(
             )
             """
 
-            info["energy_per_atom"] = round(
-                float(data_schm.energy_per_atom), 4
-            )
+            info["energy_per_atom"] = round(float(data_schm.energy_per_atom), 4)
 
             info["cif"] = ""
             try:
@@ -175,13 +170,9 @@ def parse_material_calculation_folder(
                 print("CIF exception", exp)
                 pass
             info["elements"] = ",".join(final_strt.uniq_species)
-            info["tmp_elements"] = (
-                "'" + ",".join(final_strt.uniq_species) + "'"
-            )
+            info["tmp_elements"] = "'" + ",".join(final_strt.uniq_species) + "'"
             info["formula"] = final_strt.composition.reduced_formula
-            info["tmp_formula"] = (
-                "'" + final_strt.composition.reduced_formula + "'"
-            )
+            info["tmp_formula"] = "'" + final_strt.composition.reduced_formula + "'"
             info["number_uniq_species"] = len(final_strt.uniq_species)
             info["efermi"] = round(data_schm.efermi, 4)
             info["functional"] = data_schm.functional
@@ -194,35 +185,23 @@ def parse_material_calculation_folder(
             info["data_source"] = source
             info["forces"] = (
                 "'"
-                + array_to_string(
-                    [" ".join(map(str, j)) for j in data_schm.forces]
-                )
+                + array_to_string([" ".join(map(str, j)) for j in data_schm.forces])
                 + "'"
             )
             info["stress"] = (
                 "'"
-                + array_to_string(
-                    [" ".join(map(str, j)) for j in data_schm.stress]
-                )
+                + array_to_string([" ".join(map(str, j)) for j in data_schm.stress])
                 + "'"
             )
     try:
         projham_xml_path_gz = os.path.join(path, "projham_K.xml.gz")
         projham_xml_path = os.path.join(path, "projham_K.xml")
         if os.path.exists(projham_xml_path):
-            energies, dos, pdos, names = ProjHamXml(
-                filename=projham_xml_path
-            ).dos()
+            energies, dos, pdos, names = ProjHamXml(filename=projham_xml_path).dos()
             line = (
-                "<edos_energies>'"
-                + ",".join(map(str, energies))
-                + "'</edos_energies>"
+                "<edos_energies>'" + ",".join(map(str, energies)) + "'</edos_energies>"
             )
-            line += (
-                "<total_edos_up>'"
-                + ",".join(map(str, dos))
-                + "'</total_edos_up>"
-            )
+            line += "<total_edos_up>'" + ",".join(map(str, dos)) + "'</total_edos_up>"
             line += "<elemental_dos>"
             for n, nn in enumerate(names):
                 pdos_n = pdos[:, n]
@@ -231,19 +210,11 @@ def parse_material_calculation_folder(
 
             info["dos"] = line
         elif os.path.exists(projham_xml_path_gz):
-            energies, dos, pdos, names = ProjHamXml(
-                filename=projham_xml_path_gz
-            ).dos()
+            energies, dos, pdos, names = ProjHamXml(filename=projham_xml_path_gz).dos()
             line = (
-                "<edos_energies>'"
-                + ",".join(map(str, energies))
-                + "'</edos_energies>"
+                "<edos_energies>'" + ",".join(map(str, energies)) + "'</edos_energies>"
             )
-            line += (
-                "<total_edos_up>'"
-                + ",".join(map(str, dos))
-                + "'</total_edos_up>"
-            )
+            line += "<total_edos_up>'" + ",".join(map(str, dos)) + "'</total_edos_up>"
             line += "<elemental_dos>'"
             for n, nn in enumerate(names):
                 pdos_n = pdos[:, n]

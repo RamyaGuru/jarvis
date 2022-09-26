@@ -111,8 +111,7 @@ class Surface(object):
             # constants describing the dot product of basis c1 and c2:
             # dot(c1,c2) = k1+i*k2, i in Z
             k1 = np.dot(
-                p * (k_index * a1 - h_index * a2)
-                + q * (l_index * a1 - h_index * a3),
+                p * (k_index * a1 - h_index * a2) + q * (l_index * a1 - h_index * a3),
                 l_index * a2 - k_index * a3,
             )
             k2 = np.dot(

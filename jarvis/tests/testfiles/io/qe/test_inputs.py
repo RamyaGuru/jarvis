@@ -10,9 +10,7 @@ def test_inputs():
     elements = ["Si", "Si"]
     Si = Atoms(lattice_mat=box, coords=coords, elements=elements)
     print(Si)
-    kp = Kpoints3D().automatic_length_mesh(
-        lattice_mat=Si.lattice_mat, length=20
-    )
+    kp = Kpoints3D().automatic_length_mesh(lattice_mat=Si.lattice_mat, length=20)
     new_file, filename = tempfile.mkstemp()
     qe = QEinfile(Si, kp)
     qe.write_file(filename)
@@ -22,4 +20,3 @@ def test_inputs():
     sp = qe.atomic_species_string()
     sp = qe.atomic_cell_params()
     assert qe.input_params["system"]["nat"] == 2
-    

@@ -31,14 +31,7 @@ example_fold_tgz = os.path.join(
 
 
 example_fold = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "..",
-    "..",
-    "..",
-    "examples",
-    "vasp",
-    "SiOptb88",
+    os.path.dirname(__file__), "..", "..", "..", "..", "examples", "vasp", "SiOptb88",
 )
 
 if not os.path.isdir(example_fold):
@@ -78,16 +71,10 @@ band_vrun = Vasprun(
     )
 )
 non_spinpol_vrun = Vasprun(
-    filename=os.path.join(
-        os.path.dirname(__file__),
-        "vasprun.xml.JVASP-23436",
-    )
+    filename=os.path.join(os.path.dirname(__file__), "vasprun.xml.JVASP-23436",)
 )
 vasp544_mbj_optics_vrun = Vasprun(
-    filename=os.path.join(
-        os.path.dirname(__file__),
-        "vasprun.xml.JVASP-97577",
-    )
+    filename=os.path.join(os.path.dirname(__file__), "vasprun.xml.JVASP-97577",)
 )
 opt_vrun = Vasprun(
     filename=os.path.join(
@@ -224,12 +211,7 @@ wf_noso = Wavecar(
 )
 wf_so = Wavecar(
     filename=os.path.join(
-        os.path.dirname(__file__),
-        "..",
-        "..",
-        "analysis",
-        "topological",
-        "WAVECAR.soc",
+        os.path.dirname(__file__), "..", "..", "analysis", "topological", "WAVECAR.soc",
     ),
     lsorbit=True,
 )
@@ -237,11 +219,7 @@ wf_so = Wavecar(
 
 def test_chgcar():
     # print (chg.is_spin_polarized(), chg.is_spin_orbit(), np.array(chg.chg).shape)
-    assert (
-        chg.is_spin_polarized(),
-        chg.is_spin_orbit(),
-        np.array(chg.chg).shape,
-    ) == (
+    assert (chg.is_spin_polarized(), chg.is_spin_orbit(), np.array(chg.chg).shape,) == (
         True,
         False,
         (2, 56, 56, 56),
@@ -255,11 +233,7 @@ def test_chgcar():
 
 def test_locpot():
     # print (chg.is_spin_polarized(), chg.is_spin_orbit(), np.array(chg.chg).shape)
-    assert (
-        loc.is_spin_polarized(),
-        loc.is_spin_orbit(),
-        np.array(chg.chg).shape,
-    ) == (
+    assert (loc.is_spin_polarized(), loc.is_spin_orbit(), np.array(chg.chg).shape,) == (
         False,
         False,
         (2, 56, 56, 56),
@@ -306,9 +280,7 @@ def test_vrun():
     # TODO #pdos5 = opt_vrun.get_spdf_dos()
     td = vrun.to_dict()
     fd = Vasprun.from_dict(td)
-    vrun_dm = Vasprun(
-        os.path.join(os.path.dirname(__file__), "JVASP-86924.xml")
-    )
+    vrun_dm = Vasprun(os.path.join(os.path.dirname(__file__), "JVASP-86924.xml"))
     fv = vrun_dm.fermi_velocities
     assert round(fv[0][0], 2) == round(491630.23058338434, 2)
     # Based on bug fixes
@@ -325,9 +297,7 @@ def test_osz():
 
 def test_out():
     assert (round(out.elastic_props()["KV"], 2)) == (87.27)
-    out_efg = Outcar(
-        os.path.join(os.path.dirname(__file__), "OUTCAR.EFG-JVASP-12148")
-    )
+    out_efg = Outcar(os.path.join(os.path.dirname(__file__), "OUTCAR.EFG-JVASP-12148"))
     rl, imag = opt_out.freq_dielectric_tensor()
     nedos = opt_out.nedos
     out_efg_raw = Outcar(
@@ -350,9 +320,7 @@ def test_out():
 
 
 def test_dfpt():
-    vrun = Vasprun(
-        os.path.join(os.path.dirname(__file__), "vasprun.xml.JVASP-39")
-    )
+    vrun = Vasprun(os.path.join(os.path.dirname(__file__), "vasprun.xml.JVASP-39"))
     out = Outcar(os.path.join(os.path.dirname(__file__), "OUTCAR.JVASP-39"))
     bec = round(vrun.dfpt_data["born_charges"][0][0][0], 2)
     eig = round(out.phonon_eigenvalues[2], 2)
@@ -367,16 +335,13 @@ def test_dfpt():
 
 
 def single_element_vrun():
-    vrun = Vasprun(
-        os.path.join(os.path.dirname(__file__), "vasprun.xml.JVASP-816")
-    )
+    vrun = Vasprun(os.path.join(os.path.dirname(__file__), "vasprun.xml.JVASP-816"))
     p = vrun.partial_dos_spdf()
 
 
 def test_waveder():
     assert (
-        np.iscomplex(wder.get_orbital_derivative_between_states(0, 0, 0, 0, 0))
-        == True
+        np.iscomplex(wder.get_orbital_derivative_between_states(0, 0, 0, 0, 0)) == True
     )
     assert (
         complex(wder.get_orbital_derivative_between_states(0, 0, 0, 0, 0)).real
@@ -385,9 +350,7 @@ def test_waveder():
 
 
 def test_ir():
-    vrun = Vasprun(
-        os.path.join(os.path.dirname(__file__), "vasprun.xml.JVASP-39")
-    )
+    vrun = Vasprun(os.path.join(os.path.dirname(__file__), "vasprun.xml.JVASP-39"))
     out = Outcar(os.path.join(os.path.dirname(__file__), "OUTCAR.JVASP-39"))
     phonon_eigenvectors = vrun.dfpt_data["phonon_eigenvectors"]
     vrun_eigs = vrun.dfpt_data["phonon_eigenvalues"]

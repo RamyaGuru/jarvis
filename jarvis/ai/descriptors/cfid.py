@@ -275,16 +275,7 @@ class CFID(object):
             chem_nm = get_descrp_arr_name()
             for d, nm in zip(
                 [mean_chem, cell, mean_chg, rdf, adfa, adfb, ddf, nn],
-                [
-                    "mean_chem",
-                    "cell",
-                    "mean_chg",
-                    "rdf",
-                    "adfa",
-                    "adfb",
-                    "ddf",
-                    "nn",
-                ],
+                ["mean_chem", "cell", "mean_chg", "rdf", "adfa", "adfb", "ddf", "nn",],
             ):
                 if len(d) != 0:
                     for ff, dd in enumerate(d):
@@ -300,16 +291,7 @@ class CFID(object):
         else:
             for d, nm in zip(
                 [mean_chem, cell, mean_chg, rdf, adfa, adfb, ddf, nn],
-                [
-                    "mean_chem",
-                    "cell",
-                    "mean_chg",
-                    "rdf",
-                    "adfa",
-                    "adfb",
-                    "ddf",
-                    "nn",
-                ],
+                ["mean_chem", "cell", "mean_chg", "rdf", "adfa", "adfb", "ddf", "nn",],
             ):
                 if len(d) != 0:
                     # if d != []:

@@ -18,9 +18,7 @@ import scipy.optimize as opt
 import copy as copy
 
 
-def get_projectors_for_formula(
-    semi_core_states=None, formula_dict={"Bi": 2, "Se": 3}
-):
+def get_projectors_for_formula(semi_core_states=None, formula_dict={"Bi": 2, "Se": 3}):
     """Get semi core states from formula dict."""
     if semi_core_states is None:
         path_semi_core = str(
@@ -332,13 +330,8 @@ class WannierHam(object):
                                             k + [dk1, dk2, dk3],
                                             keep_feasible=True,
                                         )
-                                        val, vect, p = self.solve_ham(
-                                            k, proj=None
-                                        )
-                                        if (
-                                            val[num_occ] - val[num_occ - 1]
-                                            < 0.15
-                                        ):
+                                        val, vect, p = self.solve_ham(k, proj=None)
+                                        if val[num_occ] - val[num_occ - 1] < 0.15:
                                             res = opt.minimize(
                                                 fun_to_min,
                                                 k,
@@ -362,9 +355,7 @@ class WannierHam(object):
 
                                             k = res.x
                                     else:
-                                        val, vect, p = self.solve_ham(
-                                            k, proj=None
-                                        )
+                                        val, vect, p = self.solve_ham(k, proj=None)
 
                                     d = val[num_occ] - val[num_occ - 1]
                                     if d < node_tol:
@@ -373,8 +364,7 @@ class WannierHam(object):
                                             val[num_occ] + val[num_occ - 1]
                                         ) / 2.0
                                         count = np.sum(
-                                            np.abs(val - gap_mean)
-                                            < node_tol * 2
+                                            np.abs(val - gap_mean) < node_tol * 2
                                         )
                                         if count == 2:
                                             weyl_points.append(copy.copy(k))
@@ -383,14 +373,9 @@ class WannierHam(object):
                                             dirac_points.append(copy.copy(k))
                                             print("dirac point ", k, d, count)
                                         else:
-                                            higher_order_points.append(
-                                                copy.copy(k)
-                                            )
+                                            higher_order_points.append(copy.copy(k))
                                             print(
-                                                "nontrivial point ",
-                                                k,
-                                                d,
-                                                count,
+                                                "nontrivial point ", k, d, count,
                                             )
 
                                     DIRECTGAP[c1 + c1a, c2 + c2a, c3 + c3a] = d
@@ -404,12 +389,8 @@ class WannierHam(object):
         for (cs, s) in enumerate(sig):
             IMAGE[:, :, :, cs] = np.exp(-((DIRECTGAP) ** 2) / s ** 2)
 
-        print(
-            "num thresh ", num_thresh, " out of ", nk1 * nk2 * nk3 * 4 * 4 * 4
-        )
-        print(
-            "min direct gap ", min_gap, " indirect gap  ", min_cond - max_val
-        )
+        print("num thresh ", num_thresh, " out of ", nk1 * nk2 * nk3 * 4 * 4 * 4)
+        print("min direct gap ", min_gap, " indirect gap  ", min_cond - max_val)
 
         print("weyl ", weyl_points)
         print("dirac ", dirac_points)
@@ -447,9 +428,9 @@ class WannierHam(object):
 
             for c1 in range(nk1):
                 for c2 in range(nk2):
-                    K[c1, c2, :] = k1 * float(c1) / float(nk1) + k2 * float(
-                        c2
-                    ) / float(nk2)
+                    K[c1, c2, :] = k1 * float(c1) / float(nk1) + k2 * float(c2) / float(
+                        nk2
+                    )
 
         else:
             K = Kmat
@@ -489,9 +470,7 @@ class WannierHam(object):
                 if val[nocc] < cond_min:
                     cond_min = val[nocc]
 
-        print(
-            "minimum_direct_gap", gap_min, "indirect_gap", cond_min - val_max
-        )
+        print("minimum_direct_gap", gap_min, "indirect_gap", cond_min - val_max)
         direct_gap = gap_min
         indirect_gap = cond_min - val_max
 
@@ -827,9 +806,7 @@ class WannierHam(object):
             # plt.xlim(xrange)
 
         energies = np.arange(
-            xrange[0],
-            xrange[1] + 1e-5,
-            (xrange[1] - xrange[0]) / float(nenergy),
+            xrange[0], xrange[1] + 1e-5, (xrange[1] - xrange[0]) / float(nenergy),
         )
         dos = np.zeros(np.size(energies))
         pdos = np.zeros(np.size(energies))
@@ -858,9 +835,7 @@ class WannierHam(object):
 
         return energies, dos, pdos
 
-    def generate_supercell(
-        self, supercell=[2, 2, 2], index=[0, 0, 0], sparse=False
-    ):
+    def generate_supercell(self, supercell=[2, 2, 2], index=[0, 0, 0], sparse=False):
         """Generate supercell."""
         t0 = time.time()
 
@@ -878,11 +853,7 @@ class WannierHam(object):
             return cellnew, subnew
 
         def subcell_index(ss):
-            t = (
-                ss[0] * supercell[1] * supercell[2]
-                + ss[1] * supercell[2]
-                + ss[2]
-            )
+            t = ss[0] * supercell[1] * supercell[2] + ss[1] * supercell[2] + ss[2]
             return range(t * nw, (t + 1) * nw)
 
         RH_new = {}
@@ -914,9 +885,7 @@ class WannierHam(object):
                                 sps = scipy.sparse.csr_matrix  # TO CHECK
                                 RH_new[tuple(cellnew)] = [
                                     cellnew,
-                                    sps.lil_matrix(
-                                        (NWAN, NWAN), dtype=complex
-                                    ),
+                                    sps.lil_matrix((NWAN, NWAN), dtype=complex),
                                 ]
                             else:
                                 RH_new[tuple(cellnew)] = [
@@ -933,9 +902,7 @@ class WannierHam(object):
 
                         for c1, c2 in enumerate(r1):
                             for d1, d2 in enumerate(r2):
-                                RH_new[tuple(cellnew)][1][c2, d2] += h_temp[
-                                    c1, d1
-                                ]
+                                RH_new[tuple(cellnew)][1][c2, d2] += h_temp[c1, d1]
 
         t2 = time.time()
 
@@ -990,9 +957,7 @@ class WannierHam(object):
         for c1 in range(nk1):
             for c2 in range(nk2):
                 K[c1, c2, :] = (
-                    origin
-                    + k1 * float(c1) / float(nk1)
-                    + k2 * float(c2) / float(nk2)
+                    origin + k1 * float(c1) / float(nk1) + k2 * float(c2) / float(nk2)
                 )
 
         image = np.zeros((nk1, nk2))
@@ -1001,9 +966,7 @@ class WannierHam(object):
             for c2 in range(nk2):
                 k = K[c1, c2, :]
                 val, vect, p = self.solve_ham(k=k)
-                image[c1, c2] = np.sum(
-                    np.exp(-((val - fermi) ** 2) / sig ** 2)
-                )
+                image[c1, c2] = np.sum(np.exp(-((val - fermi) ** 2) / sig ** 2))
 
         return image
 
@@ -1027,10 +990,7 @@ class Wannier90wout(object):
                 final = True
             if final:
                 if "WF centre and spread" in i:
-                    tmp = [
-                        float(j)
-                        for j in i.split("(")[1].split(")")[0].split(",")
-                    ]
+                    tmp = [float(j) for j in i.split("(")[1].split(")")[0].split(",")]
                     wan_cnts.append(tmp)
         return wan_cnts
 

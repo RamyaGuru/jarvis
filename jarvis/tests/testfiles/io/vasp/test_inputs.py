@@ -27,14 +27,7 @@ example_fold_tgz = os.path.join(
 
 
 example_fold = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "..",
-    "..",
-    "..",
-    "examples",
-    "vasp",
-    "SiOptb88",
+    os.path.dirname(__file__), "..", "..", "..", "..", "examples", "vasp", "SiOptb88",
 )
 
 if not os.path.isdir(example_fold):
@@ -122,12 +115,7 @@ def test_inputs():
     ii = Incar.from_dict(d)
     ii.write_file("INCAR")
     print(ii)
-    pot = os.path.join(
-        os.path.dirname(__file__),
-        "POT_GGA_PAW_PBE",
-        "Xe",
-        "POTCAR",
-    )
+    pot = os.path.join(os.path.dirname(__file__), "POT_GGA_PAW_PBE", "Xe", "POTCAR",)
     potc = IndividualPotcarData.from_file(pot)
     print(potc)
     os.environ["VASP_PSP_DIR"] = os.path.join(os.path.dirname(__file__))
@@ -153,7 +141,7 @@ def test_kpoints():
 
 def test_ldau():
     d = data("dft_2d")
-    #d = data("dft_3d")
+    # d = data("dft_3d")
     for i in d:
         if i["jid"] == "JVASP-76195":
             atoms = Atoms.from_dict(i["atoms"])
@@ -163,5 +151,5 @@ def test_ldau():
         if i["jid"] == "JVASP-76195":
             atoms = Atoms.from_dict(i["atoms"])
             ld = find_ldau_magmom(atoms=atoms, lsorbit=True)
-            #assert ld["LDAUU"] == "3.0 0"
+            # assert ld["LDAUU"] == "3.0 0"
             ld = find_ldau_magmom(atoms=atoms, lsorbit=False)

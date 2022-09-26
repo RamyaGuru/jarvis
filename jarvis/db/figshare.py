@@ -288,9 +288,7 @@ def get_request_data(
         response = requests.get(url, stream=True)
         total_size_in_bytes = int(response.headers.get("content-length", 0))
         block_size = 1024  # 1 Kibibyte
-        progress_bar = tqdm(
-            total=total_size_in_bytes, unit="iB", unit_scale=True
-        )
+        progress_bar = tqdm(total=total_size_in_bytes, unit="iB", unit_scale=True)
         with open(path, "wb") as file:
             for data in response.iter_content(block_size):
                 progress_bar.update(len(data))
@@ -386,9 +384,7 @@ def make_stm_from_prev_parchg(
             fd, path = tempfile.mkstemp()
             with os.fdopen(fd, "w") as tmp:
                 tmp.write(pchg)
-            TH_STM = TersoffHamannSTM(
-                chg_name=path, min_size=min_size, zcut=None
-            )
+            TH_STM = TersoffHamannSTM(chg_name=path, min_size=min_size, zcut=None)
             t_height = TH_STM.constant_height(filename=filename)
             print("t_height", t_height)
             return i

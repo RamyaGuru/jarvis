@@ -157,9 +157,7 @@ class Poscar(object):
             # print ('repr',self.frac_coords, self.frac_coords.shape)
             for ii, i in enumerate(coords_ordered):
                 p_ordered = str(props_ordered[ii])
-                rest = (
-                    rest + " ".join(map(str, i)) + " " + str(p_ordered) + "\n"
-                )
+                rest = rest + " ".join(map(str, i)) + " " + str(p_ordered) + "\n"
 
             result = header + middle + rest
 
@@ -177,7 +175,9 @@ class Poscar(object):
         lattice_mat.append([float(i) for i in text[3].split()])
         lattice_mat.append([float(i) for i in text[4].split()])
         lattice_mat = scale * np.array(lattice_mat)
-
+        begin = 5
+        if "S" in text[7] and "s" in text[7]:
+            begin = 6
         uniq_elements = text[5].split()
         element_count = np.array([int(i) for i in text[6].split()])
         elements = []
@@ -185,13 +185,12 @@ class Poscar(object):
             for j in range(ii):
                 elements.append(uniq_elements[i])
         cartesian = True
-        if "d" in text[7] or "D" in text[7]:
+        if "d" in text[begin + 2] or "D" in text[begin + 2]:
             cartesian = False
-        # print ('cartesian poscar=',cartesian,text[7])
         num_atoms = int(np.sum(element_count))
         coords = []
         for i in range(num_atoms):
-            coords.append([float(i) for i in text[8 + i].split()[0:3]])
+            coords.append([float(i) for i in text[begin + 3 + i].split()[0:3]])
         coords = np.array(coords)
         atoms = Atoms(
             lattice_mat=lattice_mat,
@@ -455,9 +454,7 @@ class Potcar(object):
         d["potcar_strings"] = np.array(self._potcar_strings).tolist()
         return d
 
-    def catenate_potcar_files(
-        self, destination_filename="POTCAR", filenames=[]
-    ):
+    def catenate_potcar_files(self, destination_filename="POTCAR", filenames=[]):
         """Catenate potcars of sifferent elements."""
         with open(destination_filename, "w") as outfile:
             for fname in filenames:
@@ -479,9 +476,7 @@ class Potcar(object):
     def write_file(self, filename="POTCAR"):
         """Write POTCAR file."""
         pot_files = self.list_potcar_files()
-        self.catenate_potcar_files(
-            destination_filename=filename, filenames=pot_files
-        )
+        self.catenate_potcar_files(destination_filename=filename, filenames=pot_files)
 
     def __repr__(self):
         """Represent Potcar."""
@@ -541,9 +536,7 @@ class Kpoints(object):
         for i, j in zip(kp_labels, kp_labels_points):
             labels[j] = i
         all_kp = np.array(all_kp, dtype="float")
-        kpts_cls = Kpoints3D(
-            kpoints=all_kp, labels=labels, kpoint_mode="linemode"
-        )
+        kpts_cls = Kpoints3D(kpoints=all_kp, labels=labels, kpoint_mode="linemode")
         return kpts_cls
 
 
@@ -571,9 +564,7 @@ def find_ldau_magmom(
         if el.element_property("is_transition_metal"):
             el_u = U
             el_l = 2
-        if el.element_property("is_actinoid") or el.element_property(
-            "is_lanthanoid"
-        ):
+        if el.element_property("is_actinoid") or el.element_property("is_lanthanoid"):
             el_u = U
             el_l = 3
             lmix = 6

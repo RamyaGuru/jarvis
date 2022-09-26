@@ -92,9 +92,7 @@ class JobFactory(object):
         ).runjob()
         print("en, final_str, forces", en, final_str, forces)
 
-        indices = symmetrically_distinct_miller_indices(
-            max_index=1, cvn_atoms=atoms
-        )
+        indices = symmetrically_distinct_miller_indices(max_index=1, cvn_atoms=atoms)
         for i in indices:
             surf = Surface(atoms=final_str, indices=i).make_surface()
             jobname = str("Surf-") + str("_".join(map(str, i)))
@@ -138,9 +136,7 @@ class JobFactory(object):
 
     # def phonon(self):
     #     pass
-    def phonons(
-        self, atoms=None, lammps_cmd="", enforce_c_size=15.0, parameters={}
-    ):
+    def phonons(self, atoms=None, lammps_cmd="", enforce_c_size=15.0, parameters={}):
         """Make Phonon calculation setup."""
         from phonopy import Phonopy
         from phonopy.file_IO import (
@@ -158,13 +154,9 @@ class JobFactory(object):
         atoms = atoms.make_supercell_matrix([dim[0], dim[1], dim[2]])
         Poscar(atoms).write_file("POSCAR-Super.vasp")
 
-        phonon = Phonopy(
-            bulk, [[dim[0], 0, 0], [0, dim[1], 0], [0, 0, dim[2]]]
-        )
+        phonon = Phonopy(bulk, [[dim[0], 0, 0], [0, dim[1], 0], [0, 0, dim[2]]])
         print("[Phonopy] Atomic displacements1:", bulk)
-        print(
-            "[Phonopy] Atomic displacements2:", phonon, dim[0], dim[1], dim[2]
-        )
+        print("[Phonopy] Atomic displacements2:", phonon, dim[0], dim[1], dim[2])
         phonon.generate_displacements(distance=0.03)
         disps = phonon.get_displacements()
         print("[Phonopy] Atomic displacements3:", disps)
@@ -203,9 +195,7 @@ class JobFactory(object):
             set_of_forces.append(forces)
         phonon.produce_force_constants(forces=set_of_forces)
 
-        write_FORCE_CONSTANTS(
-            phonon.get_force_constants(), filename="FORCE_CONSTANTS"
-        )
+        write_FORCE_CONSTANTS(phonon.get_force_constants(), filename="FORCE_CONSTANTS")
         print()
         print("[Phonopy] Phonon frequencies at Gamma:")
 
@@ -299,9 +289,7 @@ class LammpsJob(object):
         lmp = LammpsData().atoms_to_lammps(atoms=self.atoms)
         self.element_order = lmp._element_order
         lmp.write_file("data")
-        LammpsInput(LammpsDataObj=lmp).write_lammps_in(
-            parameters=self.parameters
-        )
+        LammpsInput(LammpsDataObj=lmp).write_lammps_in(parameters=self.parameters)
         for i in self.copy_files:
             shutil.copy2(i, ".")
         if "control_file" in self.parameters:
@@ -402,14 +390,10 @@ class LammpsJob(object):
             pot = os.path.join(os.getcwd(), "potential.mod")
             # print ('toten2',toten,pot)
             initial_str = LammpsData().read_data(
-                filename="data",
-                element_order=self.element_order,
-                potential_file=pot,
+                filename="data", element_order=self.element_order, potential_file=pot,
             )
             final_str = LammpsData().read_data(
-                potential_file=pot,
-                filename="data0",
-                element_order=self.element_order,
+                potential_file=pot, filename="data0", element_order=self.element_order,
             )
             forces = []
             try:

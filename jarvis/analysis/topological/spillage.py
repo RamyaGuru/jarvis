@@ -118,9 +118,7 @@ class Spillage(object):
         noso_homo = -10000000.0
         noso_lumo = 100000000.0
         for i in range(noso_bands.shape[1]):
-            homo_k = max(
-                noso_bands[0, i, n_up - 1], noso_bands[1, i, n_dn - 1]
-            )
+            homo_k = max(noso_bands[0, i, n_up - 1], noso_bands[1, i, n_dn - 1])
             lumo_k = min(noso_bands[0, i, n_up], noso_bands[1, i, n_dn])
             noso_direct = min(noso_direct, lumo_k - homo_k)
 
@@ -165,9 +163,7 @@ class Spillage(object):
                         )
                         # spin, kpt, bands, number of plane wave
                         # n_noso2 = vnoso.shape[0]
-                        vso = so.readBandCoeff(
-                            ispin=1, ikpt=nk2, iband=1, norm=False
-                        )
+                        vso = so.readBandCoeff(ispin=1, ikpt=nk2, iband=1, norm=False)
                         n_so = vso.shape[0]  # number of plane waves in so
                         vs = min(n_noso1 * 2, n_so)
                         # Vnono,and so holds wavefunctions
@@ -184,13 +180,9 @@ class Spillage(object):
                                 ispin=1, ikpt=nk1, iband=n1, norm=False
                             )[0 : vs // 2]
                         for n1 in range(1, nelec_dn + 1):
-                            Vnoso[
-                                vs // 2 : vs, n1 - 1 + nelec_up
-                            ] = noso.readBandCoeff(
+                            Vnoso[vs // 2 : vs, n1 - 1 + nelec_up] = noso.readBandCoeff(
                                 ispin=2, ikpt=nk1, iband=n1, norm=False
-                            )[
-                                0 : vs // 2
-                            ]
+                            )[0 : vs // 2]
 
                         for n1 in range(1, nelec_tot + 1):
                             t = so.readBandCoeff(

@@ -33,5 +33,5 @@ assert info["MAE_Lower"] < 200.0
 assert info["MAE_Mid"] < 200.0
 assert info["MAE_Upper"] < 200.0
 assert info["MAE_Error"] < 200.0
-cmd ='rm *.pk *.dat'
+cmd = "rm *.pk *.dat"
 os.system(cmd)

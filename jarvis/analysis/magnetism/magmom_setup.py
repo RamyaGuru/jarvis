@@ -59,9 +59,7 @@ class MagneticOrdering(object):
         # Apply symmetry with various tolerances until we find one that works
         worked = False
         for tol in [1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1]:
-            permutations, worked = self.apply_symmetry_operations(
-                ss, spg, tol=tol
-            )
+            permutations, worked = self.apply_symmetry_operations(ss, spg, tol=tol)
             if worked:
                 print("applied sym ", tol)
                 break
@@ -108,15 +106,12 @@ class MagneticOrdering(object):
                         # print(i, ii, d)
                         magnetic_list[i][ii] = -1 * magmom
 
-        if (
-            noferri
-        ):  # get rid if ferrimagnetic configurations, only exact AFM and FM
+        if noferri:  # get rid if ferrimagnetic configurations, only exact AFM and FM
             newlist = []
             for i in range(2 ** (magnetic_count)):
                 if (
                     np.abs(
-                        np.abs(np.sum(magnetic_list[i])) / abs(magmom)
-                        - magnetic_count
+                        np.abs(np.sum(magnetic_list[i])) / abs(magmom) - magnetic_count
                     )
                     < 1e-5
                     or np.abs(np.sum(magnetic_list[i])) < 1e-5

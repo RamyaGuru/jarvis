@@ -5,9 +5,7 @@ import matplotlib.pyplot as plt
 plt.switch_backend("agg")
 
 
-def read_band_energy(
-    energy_file="FeSe.energy", plot=True, band_plot="band.png"
-):
+def read_band_energy(energy_file="FeSe.energy", plot=True, band_plot="band.png"):
     """Read case.energy file."""
     f = open(energy_file, "r")
     lines = f.read().splitlines()
@@ -46,21 +44,13 @@ def read_scf(scf_file="FeSe.scf"):
     totens = []
     for i in lines:
         if ":FER  : F E R M I - ENERGY(TETRAH.M.)" in i:
-            efermies.append(
-                float(i.split(":FER  : F E R M I - ENERGY(TETRAH.M.)=")[1])
-            )
+            efermies.append(float(i.split(":FER  : F E R M I - ENERGY(TETRAH.M.)=")[1]))
         if ":ENE  : ********** TOTAL ENERGY IN Ry" in i:
-            totens.append(
-                float(i.split(":ENE  : ********** TOTAL ENERGY IN Ry =")[1])
-            )
+            totens.append(float(i.split(":ENE  : ********** TOTAL ENERGY IN Ry =")[1]))
         if ":NOE  : NUMBER OF ELECTRONS          =" in i:
-            nelects.append(
-                float(i.split(":NOE  : NUMBER OF ELECTRONS          =")[1])
-            )
+            nelects.append(float(i.split(":NOE  : NUMBER OF ELECTRONS          =")[1]))
         if ":KPT   :      NUMBER OF K-POINTS:" in i:
-            nkpts.append(
-                float(i.split(":KPT   :      NUMBER OF K-POINTS:")[1])
-            )
+            nkpts.append(float(i.split(":KPT   :      NUMBER OF K-POINTS:")[1]))
     info["efermi"] = efermies[-1]
     info["nelect"] = nelects[-1]
     info["nkpt"] = nkpts[-1]
@@ -98,9 +88,7 @@ def band_eigvals(energy_file="FeSe.energy", plot=False, band_file="band.png"):
     return eigs
 
 
-def read_spaghetti_ene(
-    filename="ICSD-76748.spaghetti_ene",
-):
+def read_spaghetti_ene(filename="ICSD-76748.spaghetti_ene",):
     """Obtain data for plotting bandstructure."""
     f = open(filename, "r")
     lines = f.read().splitlines()

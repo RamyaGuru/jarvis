@@ -5,10 +5,11 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 try:
-    from skimage.transform import rotate as sk_rotate
+    # from skimage.transform import rotate as sk_rotate
     from skimage.util import random_noise
     from skimage.filters import gaussian
-    from PIL import Image as PIL_Image
+
+    # from PIL import Image as PIL_Image
 except Exception:
     # print("Install skimage, Pillow.", exp)
     pass
@@ -37,12 +38,8 @@ class Image(object):
 
         if np.mod(FFT_image.shape[0] / zoom_factor, 2) == 0:
             F2_zoomed = FFT_image[
-                int(window_size_x / 2 - zoom_size) : int(
-                    window_size_x / 2 + zoom_size
-                ),
-                int(window_size_y / 2 - zoom_size) : int(
-                    window_size_y / 2 + zoom_size
-                ),
+                int(window_size_x / 2 - zoom_size) : int(window_size_x / 2 + zoom_size),
+                int(window_size_y / 2 - zoom_size) : int(window_size_y / 2 + zoom_size),
             ]
         else:
             F2_zoomed = FFT_image[
@@ -57,18 +54,12 @@ class Image(object):
         return ndimage.zoom(F2_zoomed, interpol_factor)
 
     def fourier_transform2D(
-        self,
-        zoom_factor=30,
-        interpol_factor=1,
-        use_crop=True,
-        pad_bright_spot=True,
+        self, zoom_factor=30, interpol_factor=1, use_crop=True, pad_bright_spot=True,
     ):
         """Make 2D FT."""
         if use_crop:
 
-            g1 = fftpack.fft2(
-                (self.crop_square().rgb_to_gray().values[:, :, 0])
-            )
+            g1 = fftpack.fft2((self.crop_square().rgb_to_gray().values[:, :, 0]))
         else:
             g1 = fftpack.fft2((self.rgb_to_gray().values[:, :, 0]))
         g2 = np.abs((fftpack.fftshift((g1))))
@@ -168,11 +159,12 @@ class Image(object):
     ):
         """Crop squarre from an image."""
         # For STM image, use min_size=50
+
+        from PIL import Image as PIL_Image
+
         if image_arr is not None:
             if greyscale:
-                pil_image = PIL_Image.fromarray(
-                    image_arr.astype("uint8")
-                ).convert("L")
+                pil_image = PIL_Image.fromarray(image_arr.astype("uint8")).convert("L")
             else:
                 pil_image = PIL_Image.fromarray(image_arr.astype("uint8"))
         else:
@@ -206,6 +198,8 @@ class Image(object):
         suffix=".png",
     ):
         """Augment images using skimage."""
+        from skimage.transform import rotate as sk_rotate
+
         if image_arr is None:
             img_arr = plt.imread(image_path)
         else:
@@ -285,9 +279,7 @@ class Image(object):
             gray, param1, param2, cv2.THRESH_BINARY | cv2.THRESH_OTSU
         )
         # findcontours
-        cnts = cv2.findContours(
-            threshed, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE
-        )[-2]
+        cnts = cv2.findContours(threshed, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[-2]
 
         # filter by area
         xcnts = []

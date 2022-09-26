@@ -61,10 +61,7 @@ class Lattice(object):
 
     def lat_lengths(self):
         """Return lattice vectors' lengths."""
-        return [
-            round(i, 6)
-            for i in (np.sqrt(np.sum(self._lat ** 2, axis=1)).tolist())
-        ]
+        return [round(i, 6) for i in (np.sqrt(np.sum(self._lat ** 2, axis=1)).tolist())]
         # return [round(np.linalg.norm(v), 6) for v in self._lat]
 
     @property
@@ -247,9 +244,7 @@ class Lattice(object):
         This includes sites in other periodic images.
         Adapted from pymatgen.
         """
-        recp_len = np.array(self.reciprocal_lattice().lat_lengths()) / (
-            2 * np.pi
-        )
+        recp_len = np.array(self.reciprocal_lattice().lat_lengths()) / (2 * np.pi)
         nmax = float(r) * recp_len + 0.01
 
         # Get the fractional coordinates of the center of the sphere
@@ -316,9 +311,7 @@ class Lattice(object):
         ]
         c_a, c_b, c_c = (cart[i] for i in inds)
         f_a, f_b, f_c = (frac[i] for i in inds)
-        l_a, l_b, l_c = (
-            np.sum(c ** 2, axis=-1) ** 0.5 for c in (c_a, c_b, c_c)
-        )
+        l_a, l_b, l_c = (np.sum(c ** 2, axis=-1) ** 0.5 for c in (c_a, c_b, c_c))
 
         def get_angles(v1, v2, l1, l2):
             x = np.inner(v1, v2) / l1[:, None] / l2
@@ -396,9 +389,7 @@ class Lattice(object):
                 if q != 0:
                     # Reduce the k-th basis vector.
                     a[:, k - 1] = a[:, k - 1] - q * a[:, i - 1]
-                    mapping[:, k - 1] = (
-                        mapping[:, k - 1] - q * mapping[:, i - 1]
-                    )
+                    mapping[:, k - 1] = mapping[:, k - 1] - q * mapping[:, i - 1]
                     uu = list(u[i - 1, 0 : (i - 1)])
                     uu.append(1)
                     # Update the GS coefficients.
@@ -437,9 +428,7 @@ class Lattice(object):
                     # We have to do p/q, so do lstsq(q.T, p.T).T instead.
                     p = dot(a[:, k:3].T, b[:, (k - 2) : k])
                     q = np.diag(m[(k - 2) : k])
-                    result = np.linalg.lstsq(q.T, p.T, rcond=None)[
-                        0
-                    ].T  # type: ignore
+                    result = np.linalg.lstsq(q.T, p.T, rcond=None)[0].T  # type: ignore
                     u[k:3, (k - 2) : k] = result
 
         return a.T, mapping.T
@@ -461,9 +450,7 @@ class Lattice(object):
         return Lattice(self._lll_matrix_mappings[delta][0])
 
 
-def lattice_coords_transformer(
-    old_lattice_mat=[], new_lattice_mat=[], cart_coords=[]
-):
+def lattice_coords_transformer(old_lattice_mat=[], new_lattice_mat=[], cart_coords=[]):
     """Transform coords to a new lattice."""
     M = np.linalg.solve(new_lattice_mat, old_lattice_mat)
     #  Maintains the z-distances - kfg

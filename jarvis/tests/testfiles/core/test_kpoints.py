@@ -12,9 +12,7 @@ import tempfile
 
 
 s1 = Poscar.from_file(
-    os.path.join(
-        os.path.dirname(__file__), "..", "analysis", "structure", "POSCAR"
-    )
+    os.path.join(os.path.dirname(__file__), "..", "analysis", "structure", "POSCAR")
 ).atoms
 s2 = Poscar.from_file(
     os.path.join(
@@ -22,9 +20,7 @@ s2 = Poscar.from_file(
     )
 ).atoms
 s3 = Poscar.from_file(
-    os.path.join(
-        os.path.dirname(__file__), "..", "analysis", "structure", "POSCAR-C2m"
-    )
+    os.path.join(os.path.dirname(__file__), "..", "analysis", "structure", "POSCAR-C2m")
 ).atoms
 s4 = Poscar.from_file(
     os.path.join(
@@ -32,23 +28,15 @@ s4 = Poscar.from_file(
     )
 ).atoms
 s5 = Poscar.from_file(
-    os.path.join(
-        os.path.dirname(__file__), "..", "analysis", "structure", "POSCAR-P-1"
-    )
+    os.path.join(os.path.dirname(__file__), "..", "analysis", "structure", "POSCAR-P-1")
 ).atoms
 s6 = Poscar.from_file(
     os.path.join(
-        os.path.dirname(__file__),
-        "..",
-        "analysis",
-        "structure",
-        "POSCAR-tetragonal",
+        os.path.dirname(__file__), "..", "analysis", "structure", "POSCAR-tetragonal",
     )
 ).atoms
 s7 = Poscar.from_file(
-    os.path.join(
-        os.path.dirname(__file__), "..", "analysis", "structure", "POSCAR-Pc"
-    )
+    os.path.join(os.path.dirname(__file__), "..", "analysis", "structure", "POSCAR-Pc")
 ).atoms
 
 
@@ -87,7 +75,7 @@ def test_kp():
 def test_extra_spgs():
     from jarvis.db.figshare import data
 
-    #d = data("dft_3d")
+    # d = data("dft_3d")
     few_spgs = {
         "JVASP-4663": 119,
         "JVASP-4666": 194,
@@ -307,20 +295,18 @@ def test_extra_spgs():
             break
  """
     for i, j in few_spgs.items():
-                name='POSCAR-'+str(i)
-                a = Atoms.from_poscar(name)
-                spg = Spacegroup3D(a).space_group_number
-                assert j == spg
+        name = "POSCAR-" + str(i)
+        a = Atoms.from_poscar(name)
+        spg = Spacegroup3D(a).space_group_number
+        assert j == spg
 
-                lattice_mat = a.lattice_mat
-                kp = Kpoints3D().automatic_length_mesh(
-                    lattice_mat=lattice_mat, length=40
-                )
-                sym = kp.high_symm_path(a)._path
-                # print (ii['jid'],a)
-                # TODO: following line failing for JVASP-4222
-                # x, y = kp.interpolated_points(a)
-                break
+        lattice_mat = a.lattice_mat
+        kp = Kpoints3D().automatic_length_mesh(lattice_mat=lattice_mat, length=40)
+        sym = kp.high_symm_path(a)._path
+        # print (ii['jid'],a)
+        # TODO: following line failing for JVASP-4222
+        # x, y = kp.interpolated_points(a)
+        break
 
 
 def test_highsym():

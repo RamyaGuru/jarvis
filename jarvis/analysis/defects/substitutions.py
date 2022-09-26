@@ -16,9 +16,7 @@ def generate_defect(
     if on_conventional_cell:
         atoms = Spacegroup3D(atoms).conventional_standard_structure
     if enforce_c_size is not None:
-        dims = get_supercell_dims(
-            atoms, enforce_c_size=enforce_c_size, extend=extend
-        )
+        dims = get_supercell_dims(atoms, enforce_c_size=enforce_c_size, extend=extend)
         supercell_size = [dims[0], dims[1], dims[2]]
         # atoms = atoms.make_supercell(supercell_size)
     spg = Spacegroup3D(atoms)

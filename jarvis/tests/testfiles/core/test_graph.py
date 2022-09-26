@@ -10,10 +10,7 @@ import pandas as pd
 import os
 import torch
 
-test_pos = os.path.join(
-    os.path.dirname(__file__),
-    "POSCAR-JVASP-7577",
-)
+test_pos = os.path.join(os.path.dirname(__file__), "POSCAR-JVASP-7577",)
 
 
 def test_graph():
@@ -59,9 +56,7 @@ def test_graph():
         node_atomwise_rdf=True,
     )
     g = Graph.from_atoms(atoms=atoms, features="basic")
-    g = Graph.from_atoms(
-        atoms=atoms, features=["Z", "atom_mass", "max_oxid_s"]
-    )
+    g = Graph.from_atoms(atoms=atoms, features=["Z", "atom_mass", "max_oxid_s"])
     g = Graph.from_atoms(atoms=atoms, features="cfid", max_cut=10000)
     print(g)
     d = g.to_dict()
@@ -82,15 +77,11 @@ def test_dataset():
     for i, row in d.iterrows():
         structure = Atoms.from_dict(row["atoms"])
         g = Graph.atom_dgl_multigraph(
-            structure,
-            atom_features="atomic_number",
-            compute_line_graph=False,
+            structure, atom_features="atomic_number", compute_line_graph=False,
         )
         graphs.append(g)
 
-    s = StructureDataset(
-        d, graphs, "formation_energy_peratom", line_graph=True
-    )
+    s = StructureDataset(d, graphs, "formation_energy_peratom", line_graph=True)
     col = s.collate
     col1 = s.collate_line_graph
     ix = s[0]

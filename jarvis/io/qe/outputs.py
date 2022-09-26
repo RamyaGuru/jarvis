@@ -70,9 +70,7 @@ class QEout(object):
         band_energies = []
         for ii, i in enumerate(self.lines):
             if "bands (ev)" in i:
-                band_energies.append(
-                    [float(j) for j in self.lines[ii + 2].split()]
-                )
+                band_energies.append([float(j) for j in self.lines[ii + 2].split()])
         return band_energies
 
 
@@ -117,7 +115,7 @@ class DataFileSchema(object):
 
     @property
     def num_atoms(self):
-        "Get total number of atoms." ""
+        """Get total number of atoms."""
         return self.final_structure.num_atoms
 
     @property
@@ -143,10 +141,7 @@ class DataFileSchema(object):
         if isinstance(line, list):
             line = line[-1]
         return np.array(
-            [
-                [float(j) for j in i.split()]
-                for i in line["forces"]["#text"].split("\n")
-            ]
+            [[float(j) for j in i.split()] for i in line["forces"]["#text"].split("\n")]
         ) * (hartree_to_ev / bohr_to_ang)
 
     @property
@@ -156,10 +151,7 @@ class DataFileSchema(object):
         if isinstance(line, list):
             line = line[-1]
         return np.array(
-            [
-                [float(j) for j in i.split()]
-                for i in line["stress"]["#text"].split("\n")
-            ]
+            [[float(j) for j in i.split()] for i in line["stress"]["#text"].split("\n")]
         ) * (hartree_to_ev / bohr_to_ang ** 3)
 
     @property
@@ -202,18 +194,10 @@ class DataFileSchema(object):
         elements = []
         pos = []
         lat = []
-        lat.append(
-            [float(i) for i in line["atomic_structure"]["cell"]["a1"].split()]
-        )
-        lat.append(
-            [float(i) for i in line["atomic_structure"]["cell"]["a2"].split()]
-        )
-        lat.append(
-            [float(i) for i in line["atomic_structure"]["cell"]["a3"].split()]
-        )
-        if isinstance(
-            line["atomic_structure"]["atomic_positions"]["atom"], list
-        ):
+        lat.append([float(i) for i in line["atomic_structure"]["cell"]["a1"].split()])
+        lat.append([float(i) for i in line["atomic_structure"]["cell"]["a2"].split()])
+        lat.append([float(i) for i in line["atomic_structure"]["cell"]["a3"].split()])
+        if isinstance(line["atomic_structure"]["atomic_positions"]["atom"], list):
             for i in line["atomic_structure"]["atomic_positions"]["atom"]:
                 elements.append(i["@name"])
                 pos.append([float(j) for j in i["#text"].split()])
@@ -224,15 +208,13 @@ class DataFileSchema(object):
                 cartesian=True,
             )
         else:
-            elements = [
-                line["atomic_structure"]["atomic_positions"]["atom"]["@name"]
-            ]
+            elements = [line["atomic_structure"]["atomic_positions"]["atom"]["@name"]]
             pos = [
                 [
                     float(j)
-                    for j in line["atomic_structure"]["atomic_positions"][
-                        "atom"
-                    ]["#text"].split()
+                    for j in line["atomic_structure"]["atomic_positions"]["atom"][
+                        "#text"
+                    ].split()
                 ]
             ]
             atoms = Atoms(
@@ -252,18 +234,10 @@ class DataFileSchema(object):
         elements = []
         pos = []
         lat = []
-        lat.append(
-            [float(i) for i in line["atomic_structure"]["cell"]["a1"].split()]
-        )
-        lat.append(
-            [float(i) for i in line["atomic_structure"]["cell"]["a2"].split()]
-        )
-        lat.append(
-            [float(i) for i in line["atomic_structure"]["cell"]["a3"].split()]
-        )
-        if isinstance(
-            line["atomic_structure"]["atomic_positions"]["atom"], list
-        ):
+        lat.append([float(i) for i in line["atomic_structure"]["cell"]["a1"].split()])
+        lat.append([float(i) for i in line["atomic_structure"]["cell"]["a2"].split()])
+        lat.append([float(i) for i in line["atomic_structure"]["cell"]["a3"].split()])
+        if isinstance(line["atomic_structure"]["atomic_positions"]["atom"], list):
             for i in line["atomic_structure"]["atomic_positions"]["atom"]:
                 elements.append(i["@name"])
                 pos.append([float(j) for j in i["#text"].split()])
@@ -274,15 +248,13 @@ class DataFileSchema(object):
                 cartesian=True,
             )
         else:
-            elements = [
-                line["atomic_structure"]["atomic_positions"]["atom"]["@name"]
-            ]
+            elements = [line["atomic_structure"]["atomic_positions"]["atom"]["@name"]]
             pos = [
                 [
                     float(j)
-                    for j in line["atomic_structure"]["atomic_positions"][
-                        "atom"
-                    ]["#text"].split()
+                    for j in line["atomic_structure"]["atomic_positions"]["atom"][
+                        "#text"
+                    ].split()
                 ]
             ]
             atoms = Atoms(
@@ -297,11 +269,7 @@ class DataFileSchema(object):
     def efermi(self):
         """Get Fermi energy."""
         return (
-            float(
-                self.data["qes:espresso"]["output"]["band_structure"][
-                    "fermi_energy"
-                ]
-            )
+            float(self.data["qes:espresso"]["output"]["band_structure"]["fermi_energy"])
             * hartree_to_ev
         )
 
@@ -314,26 +282,18 @@ class DataFileSchema(object):
     def nelec(self):
         """Get number of electrons."""
         return int(
-            float(
-                self.data["qes:espresso"]["output"]["band_structure"]["nelec"]
-            )
+            float(self.data["qes:espresso"]["output"]["band_structure"]["nelec"])
         )
 
     @property
     def nkpts(self):
         """Get number of electrons."""
-        return int(
-            float(self.data["qes:espresso"]["output"]["band_structure"]["nks"])
-        )
+        return int(float(self.data["qes:espresso"]["output"]["band_structure"]["nks"]))
 
     @property
     def nbands(self):
         """Get number of bands."""
-        return int(
-            float(
-                self.data["qes:espresso"]["output"]["band_structure"]["nbnd"]
-            )
-        )
+        return int(float(self.data["qes:espresso"]["output"]["band_structure"]["nbnd"]))
 
     @property
     def indir_gap(self):
@@ -366,9 +326,9 @@ class DataFileSchema(object):
         eigvals = []
         for i in range(nkpts):
             eig = np.array(
-                self.data["qes:espresso"]["output"]["band_structure"][
-                    "ks_energies"
-                ][i]["eigenvalues"]["#text"].split(),
+                self.data["qes:espresso"]["output"]["band_structure"]["ks_energies"][i][
+                    "eigenvalues"
+                ]["#text"].split(),
                 dtype="float",
             )
             eigvals.append(eig)
@@ -513,12 +473,11 @@ class ProjHamXml(object):
         self.atomdata["Bi"] = ["s", "p"]
 
     def get_crystal(self):
+        """Get crystal info."""
         tmp_tb = self.data["root"]["crystal"]
         A = np.reshape(np.array(tmp_tb["A"].split(), dtype="float"), (3, 3))
         nat = int(float(tmp_tb["nat"]))
-        coords = np.reshape(
-            np.array(tmp_tb["coords"].split(), dtype="float"), (nat, 3)
-        )
+        coords = np.reshape(np.array(tmp_tb["coords"].split(), dtype="float"), (nat, 3))
         types = tmp_tb["types"].split()
 
         if len(types) != nat:
@@ -530,7 +489,6 @@ class ProjHamXml(object):
 
     def get_tight_binding(self):
         """Get tight_binding parameters."""
-
         t = self.data["root"]["scf"]
         if t == "false":
             scf = False
@@ -543,9 +501,7 @@ class ProjHamXml(object):
         nwan = int(float(tmp_tb["nwan"]))
 
         if "h1" in tmp_tb:
-            h1 = np.array(tmp_tb["h1"].split(), dtype="float").reshape(
-                nwan, nwan
-            )
+            h1 = np.array(tmp_tb["h1"].split(), dtype="float").reshape(nwan, nwan)
         else:
             h1 = np.zeros((nwan, nwan), dtype=float)
 
@@ -561,9 +517,7 @@ class ProjHamXml(object):
 
         kweights = np.array(tmp_tb["kweights"].split(), dtype="float")
         nk = int(float(tmp_tb["nk"]))
-        kind_arr = np.array(tmp_tb["kind_arr"].split(), dtype="float").reshape(
-            nk, 3
-        )
+        kind_arr = np.array(tmp_tb["kind_arr"].split(), dtype="float").reshape(nk, 3)
         hk_lines = tmp_tb["Hk"].split("\n")
         H = np.zeros((nwan, nwan, nk), dtype=complex)
         S = np.zeros((nwan, nwan, nk), dtype=complex)
@@ -579,7 +533,7 @@ class ProjHamXml(object):
         return H, S, h1, kind_arr, kweights, nonorth, grid, scf, nelec
 
     def calculate_eigenvalues(self, kpoint=None, kind=-1):
-
+        """Calculate eigenvalues."""
         if self.scf is True:
             print("warning, not accurate for scf=True")
 
@@ -611,9 +565,8 @@ class ProjHamXml(object):
             vals, vects = la.eigh(hk, b=sk)
             return vals, vects
 
-    # solve hamiltonian
     def solve_ham(self, proj=None):
-
+        """Solve hamiltonian."""
         VALS = np.zeros((self.nk, self.nwan), dtype=float)
 
         if proj is not None:
@@ -635,14 +588,14 @@ class ProjHamXml(object):
                             for b in range(self.nwan):
                                 t = vects[pind, a] * np.conj(vects[b, a])
                                 PROJ[k, a, ip] += 0.5 * np.real(
-                                    t * sk[b, pind]
-                                    + np.conj(t) * np.conj(sk[b, pind])
+                                    t * sk[b, pind] + np.conj(t) * np.conj(sk[b, pind])
                                 )
 
         return VALS, PROJ
 
     # figure our correspondence between orbitals and indicies.
     def count_orbs(self):
+        """Count orbitals."""
         ORBS = []
         c = 0
         for a in range(self.nat):
@@ -677,7 +630,7 @@ class ProjHamXml(object):
 
     # figure our orbitials to project onto from inputs
     def decide_projection(self, proj_atoms=None, proj_orbs=None):
-
+        """Decide projections."""
         ORBS = self.count_orbs()
 
         if proj_atoms is None and proj_orbs is None:
@@ -740,14 +693,9 @@ class ProjHamXml(object):
         return proj, names
 
     def dos(
-        self,
-        smearing=0.3,
-        npts=500,
-        proj_atoms=None,
-        proj_orbs=None,
-        do_proj=True,
+        self, smearing=0.3, npts=500, proj_atoms=None, proj_orbs=None, do_proj=True,
     ):
-
+        """Get DOS."""
         if do_proj is False:
             proj = None
             names = None
@@ -773,9 +721,7 @@ class ProjHamXml(object):
         W = np.tile(self.kweights, (self.nwan, 1)).T / 2.0
 
         for (c, e) in enumerate(energies):
-            dos[c] = np.sum(
-                np.exp(-0.5 * (VALS[:, :] - e) ** 2 / smearing ** 2) * W
-            )
+            dos[c] = np.sum(np.exp(-0.5 * (VALS[:, :] - e) ** 2 / smearing ** 2) * W)
 
         dos = dos / smearing / (2.0 * np.pi) ** 0.5
 

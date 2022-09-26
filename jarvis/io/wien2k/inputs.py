@@ -17,9 +17,7 @@ def get_wien_kpoints(
     """Get WIEN2k style kpoints for bandstructure calculation."""
     uniqe_lbl = []
     uniqe_k = []
-    kpoints, labels = Kpoints3D().interpolated_points(
-        atoms, line_density=line_density
-    )
+    kpoints, labels = Kpoints3D().interpolated_points(atoms, line_density=line_density)
     kp = Kpoints3D().high_kpath(atoms)["kpoints"]
     for i, j in kp.items():
         uniqe_lbl.append(i)
@@ -86,9 +84,7 @@ def prepare_wien_input(atoms=None, filename="case.cif"):
     atoms.write_cif(filename=filename)
     cmd = str("cif2struct ") + str(filename)
     os.system(cmd)
-    cmd = str(
-        "init_lapw -b -red 0 -vxc 13 -ecut -7.0  -numk 100 -sp >init_w2k_out"
-    )
+    cmd = str("init_lapw -b -red 0 -vxc 13 -ecut -7.0  -numk 100 -sp >init_w2k_out")
     os.system(cmd)
     cmd = str("runsp_lapw -cc 0.0001 -ec 0.0001 -p -i 500  >run_w2k_out")
     os.system(cmd)

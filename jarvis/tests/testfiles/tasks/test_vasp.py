@@ -3,24 +3,12 @@ import os
 import tarfile
 
 example_fold_tgz = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "..",
-    "..",
-    "examples",
-    "vasp",
-    "SiOptb88.tgz",
+    os.path.dirname(__file__), "..", "..", "..", "examples", "vasp", "SiOptb88.tgz",
 )
 
 
 example_fold = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "..",
-    "..",
-    "examples",
-    "vasp",
-    "SiOptb88",
+    os.path.dirname(__file__), "..", "..", "..", "examples", "vasp", "SiOptb88",
 )
 
 if not os.path.isdir(example_fold):
@@ -29,10 +17,15 @@ if not os.path.isdir(example_fold):
     tar.close()
 
 
-
-
 vasp_path = os.path.join(
-    os.path.dirname(__file__), "..", "..", "..", "examples", "vasp", "SiOptb88", "SiOptb88"
+    os.path.dirname(__file__),
+    "..",
+    "..",
+    "..",
+    "examples",
+    "vasp",
+    "SiOptb88",
+    "SiOptb88",
 )
 
 cwd = str(os.getcwd())

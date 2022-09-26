@@ -46,10 +46,7 @@ class Spectrum(object):
         """Smoothen peak for delta function like peaks."""
         lwidth_list = [float(self.linewidth) for i in range(self.num_modes)]
         spect_x = np.arange(
-            self.min_x,
-            self.max_x + self.resolution,
-            self.resolution,
-            dtype=np.float64,
+            self.min_x, self.max_x + self.resolution, self.resolution, dtype=np.float64,
         )
         spect_y = np.zeros_like(spect_x, dtype=np.float64)
         for i, j, k in zip(self.x, self.y, lwidth_list):

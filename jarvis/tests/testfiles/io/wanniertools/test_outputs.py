@@ -13,6 +13,7 @@ def test_output():
     assert (z2, chrn[0]) == ("1;0,0,0", 0.0)
     x = parse_chern_dat(chern_dat=chrn1)
 
+
 #    print(z2)
 #    print(chrn)
 # test_output()

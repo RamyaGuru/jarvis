@@ -37,9 +37,7 @@ def symmetrically_distinct_miller_indices(max_index=3, cvn_atoms=None):
     r = r3
     # print ('sorted',r,sorted(r))
     conv_hkl_list = [
-        miller
-        for miller in itertools.product(r, r, r)
-        if any([i != 0 for i in miller])
+        miller for miller in itertools.product(r, r, r) if any([i != 0 for i in miller])
     ]
     spg = Spacegroup3D(cvn_atoms)._dataset
     rot = spg["rotations"]
@@ -187,9 +185,7 @@ class Spacegroup3D(object):
             self._atoms.atomic_numbers,
         )
         dataset = spglib.get_symmetry_dataset(
-            phonopy_atoms,
-            symprec=self._symprec,
-            angle_tolerance=self._angle_tolerance,
+            phonopy_atoms, symprec=self._symprec, angle_tolerance=self._angle_tolerance,
         )
         """
         keys = ('number',
@@ -323,9 +319,7 @@ class Spacegroup3D(object):
         return self._dataset["pointgroup"]
 
     @property
-    def conventional_standard_structure(
-        self, tol=1e-5, international_monoclinic=True
-    ):
+    def conventional_standard_structure(self, tol=1e-5, international_monoclinic=True):
         """
         Give a conventional cell according to certain conventions.
 
@@ -359,11 +353,7 @@ class Spacegroup3D(object):
                 a, b = sorted(latt.abc[:2])
                 sorted_dic = sorted(
                     [
-                        {
-                            "vec": latt.matrix[i],
-                            "length": latt.abc[i],
-                            "orig_index": i,
-                        }
+                        {"vec": latt.matrix[i], "length": latt.abc[i], "orig_index": i,}
                         for i in [0, 1]
                     ],
                     key=lambda k: k["length"],
@@ -378,11 +368,7 @@ class Spacegroup3D(object):
                 a, b = sorted(latt.abc[1:])
                 sorted_dic = sorted(
                     [
-                        {
-                            "vec": latt.matrix[i],
-                            "length": latt.abc[i],
-                            "orig_index": i,
-                        }
+                        {"vec": latt.matrix[i], "length": latt.abc[i], "orig_index": i,}
                         for i in [1, 2]
                     ],
                     key=lambda k: k["length"],
@@ -438,11 +424,7 @@ class Spacegroup3D(object):
                 transf[2] = [0, 0, 1]
                 sorted_dic = sorted(
                     [
-                        {
-                            "vec": latt.matrix[i],
-                            "length": latt.abc[i],
-                            "orig_index": i,
-                        }
+                        {"vec": latt.matrix[i], "length": latt.abc[i], "orig_index": i,}
                         for i in [0, 1]
                     ],
                     key=lambda k: k["length"],
@@ -694,9 +676,7 @@ def get_new_coord_for_xyz_sym(frac_coord=[], xyz_string=""):
     """Obtain new coord from xyz string."""
     from jarvis.core.utils import get_new_coord_for_xyz_sym
 
-    return get_new_coord_for_xyz_sym(
-        frac_coord=frac_coord, xyz_string=xyz_string
-    )
+    return get_new_coord_for_xyz_sym(frac_coord=frac_coord, xyz_string=xyz_string)
 
 
 def check_duplicate_coords(coords=[], coord=[]):

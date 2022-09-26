@@ -31,9 +31,7 @@ class Composition(object):
         AB2 Li2O4 LiO2 77.8796
         """
         if sort:
-            content = OrderedDict(
-                sorted(content.items(), key=lambda x: (x[0]))
-            )
+            content = OrderedDict(sorted(content.items(), key=lambda x: (x[0])))
         self._content = content
 
     @staticmethod

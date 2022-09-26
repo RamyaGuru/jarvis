@@ -68,9 +68,7 @@ class Wannier90win(object):
         # Not tested completely
         if self.semi_core_states is None:
             path_semi_core = str(
-                os.path.join(
-                    os.path.dirname(__file__), "default_semicore.json"
-                )
+                os.path.join(os.path.dirname(__file__), "default_semicore.json")
             )
             f = open(path_semi_core, "r")
             semi_core_states = json.load(f)
@@ -169,9 +167,7 @@ class Wannier90win(object):
         f.write(line)
         line = str("num_iter =") + str(self.num_iter) + str("\n")
         f.write(line)
-        line = (
-            str("num_print_cycles =") + str(self.num_print_cycles) + str("\n")
-        )
+        line = str("num_print_cycles =") + str(self.num_print_cycles) + str("\n")
         f.write(line)
         line = str("begin projections") + str("\n")
         f.write(line)

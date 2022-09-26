@@ -29,7 +29,6 @@ if not os.path.isdir(example_fold):
     tar.close()
 
 
-
 lammps_path = os.path.join(
     os.path.dirname(__file__),
     "..",

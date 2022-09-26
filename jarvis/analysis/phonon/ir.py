@@ -23,9 +23,7 @@ def normalize_vecs(phonon_eigenvectors, masses):
     for i in range(0, nmodes):
         eigenvector = phonon_eigenvectors[i]
         for j in range(0, natoms):
-            eigendisplacements[i, j, :] = np.divide(
-                eigenvector[j], sqrt_masses[j]
-            )
+            eigendisplacements[i, j, :] = np.divide(eigenvector[j], sqrt_masses[j])
     return eigendisplacements
 
 

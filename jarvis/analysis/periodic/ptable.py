@@ -91,18 +91,14 @@ def plot_ptable_trend(
         for i in range(len(data)):
             if data[i] < 0:
                 raise ValueError(
-                    "Entry for element "
-                    + data_elements[i]
-                    + " is negative but"
+                    "Entry for element " + data_elements[i] + " is negative but"
                     " log-scale is selected"
                 )
         color_mapper = LogColorMapper(
             palette=bokeh_palette, low=min(data), high=max(data)
         )
         norm = LogNorm(vmin=min(data), vmax=max(data))
-    color_scale = ScalarMappable(norm=norm, cmap=cmap).to_rgba(
-        data, alpha=None
-    )
+    color_scale = ScalarMappable(norm=norm, cmap=cmap).to_rgba(data, alpha=None)
 
     # Define color for blank entries
     blank_color = "#c4c4c4"
@@ -134,20 +130,12 @@ def plot_ptable_trend(
         )
     )
     # Plot the periodic table
-    p = figure(
-        x_range=group_range, y_range=list(reversed(period_label)), tools="save"
-    )
+    p = figure(x_range=group_range, y_range=list(reversed(period_label)), tools="save")
     p.plot_width = width
     p.outline_line_color = None
     p.toolbar_location = "above"
     p.rect(
-        "group",
-        "period",
-        0.9,
-        0.9,
-        source=source,
-        alpha=alpha,
-        color="type_color",
+        "group", "period", 0.9, 0.9, source=source, alpha=alpha, color="type_color",
     )
     p.axis.visible = False
     text_props = {

@@ -1,9 +1,13 @@
 from jarvis.core.atoms import (
     Atoms,
+    compare_atoms,
     VacuumPadding,
     get_supercell_dims,
     build_xanes_poscar,
+    OptimadeAdaptor,
 )
+
+
 import os
 from jarvis.db.figshare import get_jid_data, data
 import tarfile
@@ -13,24 +17,12 @@ new_file, filename = tempfile.mkstemp()
 
 
 example_fold_tgz = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "..",
-    "..",
-    "examples",
-    "vasp",
-    "SiOptb88.tgz",
+    os.path.dirname(__file__), "..", "..", "..", "examples", "vasp", "SiOptb88.tgz",
 )
 
 
 example_fold = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "..",
-    "..",
-    "examples",
-    "vasp",
-    "SiOptb88",
+    os.path.dirname(__file__), "..", "..", "..", "examples", "vasp", "SiOptb88",
 )
 
 if not os.path.isdir(example_fold):
@@ -51,26 +43,11 @@ poscar_path = os.path.join(
     "POSCAR",
 )
 
-cif_example = os.path.join(
-    os.path.dirname(__file__),
-    "1000052.cif",
-)
-cif_example2 = os.path.join(
-    os.path.dirname(__file__),
-    "Bacomp.cif",
-)
-cif_example3 = os.path.join(
-    os.path.dirname(__file__),
-    "mock.cif",
-)
-cif_example4 = os.path.join(
-    os.path.dirname(__file__),
-    "exp_000034.cif",
-)
-cif_example5 = os.path.join(
-    os.path.dirname(__file__),
-    "1000000.cif",
-)
+cif_example = os.path.join(os.path.dirname(__file__), "1000052.cif",)
+cif_example2 = os.path.join(os.path.dirname(__file__), "Bacomp.cif",)
+cif_example3 = os.path.join(os.path.dirname(__file__), "mock.cif",)
+cif_example4 = os.path.join(os.path.dirname(__file__), "exp_000034.cif",)
+cif_example5 = os.path.join(os.path.dirname(__file__), "1000000.cif",)
 
 
 def test_from_cif():
@@ -94,6 +71,12 @@ def test_basic_atoms():
     dim = get_supercell_dims(Si)
     build_xanes_poscar(atoms=Si, filename_with_prefix=True)
     assert dim == [3, 3, 3]
+
+    opt = OptimadeAdaptor(Si)
+    opt_info = opt.to_optimade()
+    opt = OptimadeAdaptor()
+    print(opt.from_optimade(opt_info))
+
     polar = Si.check_polar
     Si.props = ["a", "a"]
     vac_pad = VacuumPadding(Si)
@@ -102,9 +85,7 @@ def test_basic_atoms():
     den_lll_red = round(Si.get_lll_reduced_structure().density, 2)
     strng = Si.get_string()
     scell_nat = Si.make_supercell([2, 2, 2]).num_atoms
-    scell_nat2 = Si.make_supercell_matrix(
-        [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
-    ).num_atoms
+    scell_nat2 = Si.make_supercell_matrix([[2, 0, 0], [0, 2, 0], [0, 0, 2]]).num_atoms
     # print("scell_nat,scell_nat2", scell_nat, scell_nat2)
     # print(Si.make_supercell([2, 2, 2]))
     # print()
@@ -113,22 +94,21 @@ def test_basic_atoms():
     rem = (Si.make_supercell([2, 2, 2]).remove_site_by_index(site=0)).num_atoms
     prim = Si.get_primitive_atoms
     print(prim.cart_coords)
+    conv = Si.get_conventional_atoms
+    spgn = Si.get_spacegroup
+    comp = compare_atoms(atoms1=prim, atoms2=conv)
     assert round(prim.cart_coords[0][0], 2) == round(4.37815150, 2)
     # print ('raw_distance_matrix', prim.raw_distance_matrix)
     # print ('raw_distance_matrix', Si.raw_distance_matrix)
     # print ('distance_matrix', Si.pymatgen_converter().distance_matrix)
-    assert round(prim.raw_distance_matrix[0][1], 2) == round(
-        4.42386329832851, 2
-    )
+    assert round(prim.raw_distance_matrix[0][1], 2) == round(4.42386329832851, 2)
     asee = Si.ase_converter()
     print(prim.raw_angle_matrix)
     d = Si.to_dict()
     new_at = Atoms.from_dict(d)
     angs_a = d["angles"][0]
     Si_2_den = Atoms(
-        lattice_mat=d["lattice_mat"],
-        coords=d["coords"],
-        elements=d["elements"],
+        lattice_mat=d["lattice_mat"], coords=d["coords"], elements=d["elements"],
     ).density
     Si_xyz = Si.get_xyz_string
     Si.write_xyz(filename="atoms.xyz")

@@ -3,7 +3,8 @@ from jarvis.io.vasp.outputs import Vasprun
 import os
 import tarfile
 import matplotlib.pyplot as plt
-plt.switch_backend('agg')
+
+plt.switch_backend("agg")
 
 example_fold_tgz = os.path.join(
     os.path.dirname(__file__),
@@ -18,22 +19,13 @@ example_fold_tgz = os.path.join(
 
 
 example_fold = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "..",
-    "..",
-    "..",
-    "examples",
-    "vasp",
-    "SiOptb88",
+    os.path.dirname(__file__), "..", "..", "..", "..", "examples", "vasp", "SiOptb88",
 )
 
 if not os.path.isdir(example_fold):
     tar = tarfile.open(example_fold_tgz)
     tar.extractall(example_fold)
     tar.close()
-
-
 
 
 vrun_path = os.path.join(
@@ -61,10 +53,11 @@ def test_solar():
         en, abz, indirgap, indirgap, plot_current_voltage=True
     )
     # print("SLME", 100 * eff)
-    eff_sq = SolarEfficiency().calculate_SQ(indirgap,  plot_current_voltage=True)
+    eff_sq = SolarEfficiency().calculate_SQ(indirgap, plot_current_voltage=True)
     # print("SQ", 100 * eff)
     assert (round(100 * eff_slme, 2), round(100 * eff_sq, 2)) == (33.23, 32.93)
-    cmd='rm sq.png slme.png'
+    cmd = "rm sq.png slme.png"
     os.system(cmd)
+
 
 # test_solar()
